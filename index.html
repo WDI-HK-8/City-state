@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>City-state</title>
+		<meta name="description" content="A game of city-state, based on Risk">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+		<!-- LIBRARIES -->
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+		<!-- MAIN FILES -->
+		<script src="js/app.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/custom.css">
+	</head>
+	<body class="main fluid-container">
+		<img id="map" src="assets/img/map.jpg">
+		<section id="map_grid">
+		</section>
+		<section id="sidebar">
+			<header>
+				<h3>Province Info</h3>
+			</header>
+			<article id="status_log">
+				<ul>
+				    <li>Region Name: Corinth</li>
+				    <li>Domain: Red</li>
+				    <li>Troop Garrisoned: 4</li>
+				    <li>Target Routes: Athens, Pylos, Crete</li>
+				</ul>
+			</article>
+			<header>
+				<h3>
+					<span id="deploy_ind">Deploy</span> / 
+					<span id="invade_ind">Invade</span> / 
+					<span id="fortify_ind">Fortify</span>
+				</h3>
+			</header>
+			<article id="phase_log">
+				<em>You have 4 recruits left.</em><br><br>
+				<p>Corinth will add 4 troops to its barracks. <br><br>
+				<small>PRESS CONFIRM TO SET BEFORE ADVANCING TO NEXT PHASE</small></p>
+			</article>
+			<article id="control_box">
+				<button id="confirm_btn" class="btn btn-default">Confirm</button>
+				<button id="cancel_btn" class="btn btn-default">Cancel</button><br><br> 
+				<button id="phase_btn" class="btn btn-default">NEXT PHASE </button>
+			</article>
+			<article id="test"></article>
+
+		</section>
+	</body>	
+</html>
