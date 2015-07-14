@@ -2,6 +2,7 @@
 $(document).ready(function (){
   var row = '<div class="row"></div>'
   var cell = '<div class="col-xs-1 province" data-col="" data-row=""></div>';
+  var counter2= 0;
   var water_cells = [
     [11,0],[11,1],[11,10],[11,11],
     [10,0],[10,1],[10,8],[10,9],[10,10],[10,11],
@@ -28,6 +29,7 @@ $(document).ready(function (){
   mvrange_map();
   hover_status();
   roll_setup();
+
   //----------initialize grid------------
   function grid_init(){
     //initialize twelve rows first
@@ -107,64 +109,112 @@ $(document).ready(function (){
 
   //---------troop-related------------
   function recruit_setup(){
-    player1.recruits = 5;
-    player2.recruits = 5;
-    neutral.recruits = 5;
-    //re-update the game log on each cell selection
-    $('#phase_log p').html('Player1 recruits: '+ player1.recruits +
-                           '<br>Player2 recruits: '+ player2.recruits +
-                           '<br>Neutral recruits: ' + neutral.recruits);
+    //initialize recruit count
+    player1.recruits = 20;
+    player2.recruits = 20;
+    neutral.recruits = 40;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
+    //re-update the game log on each cell selection... NOTE TO SELF: Refactor this later
+    $('#phase_log p').html('Player1 recruits: '+ player1.recruits +
+                           '<br>Player2 recruits: '+ player2.recruits +
+                           '<br>Neutral recruits: ' + neutral.recruits);
     add_troops();
+  }
+
+  //add_troops() handler...NOTE TO SELF: Refactor more with 'this' via fun.bind() to bind to click element
+  function populate(owner){
+    owner.recruits--; 
+    owner.recruitcounter++;
   }
   //adds troop to cell on click this. should run AFTER recruit_setup has run.
   function add_troops(){
     alert('Player1: Place Troops');
+    $('#phase_log em').hide();
     $('#sidebar').css('background-color','rgba(17,63,99,1)'); //player1 color cue
     $('.province').click(function(){
-      //re-update the game log on each cell selection
-      $('#phase_log p').html('player1 recruits: '+ player1.recruits +
-                             '<br>player2 recruits: '+ player2.recruits +
-                             '<br>neutral recruits: ' + neutral.recruits);
-      //player still has troops and you have drawn twice
-      if(player1.recruits > 0 && player1.recruitcounter < 2 && this.owner!= 'neutral'){ 
+      
+      //player 1 deploy twice
+      if(player1.recruits > 0 && player1.recruitcounter < 2 && this.owner!= 'neutral' && this.owner!= 'player2'){ 
+        counter2++;
+        console.log(counter2);
+        populate(player1);
         this.owner = 'player1';
         this.garrison++;
-        player1.recruits--; 
-        player1.recruitcounter++;
-        $(this).css('background-color','rgba(0,15,88,0.7)').html(this.garrison+'<br>'+this.owner);
+        $(this).css('background-color','rgba(0,15,88,0.5)').html(this.garrison+'<br>'+this.owner);
 
-        if(player1.recruitcounter >= 2){ 
-          neutral.recruitcounter = 0;
+        //set for neutral
+        if(player1.recruitcounter >= 2){ //once you deploy twice
+          neutral.recruitcounter = 0; //reset the turn counter for next object
           $('#sidebar').css('background-color','rgba(77,37,4,1)');
         }
       }
-      //after player deployed every two times, then deploy neutral two times.
-      else if(player1.recruitcounter >= 2 && this.owner!= 'player1'){ 
+      //player1's neutral deploy twice
+      else if(player1.recruitcounter >= 2 && neutral.recruitcounter < 2 && this.owner!= 'player1' && this.owner!= 'player2'){ 
+        populate(neutral);
         this.owner = 'neutral';
         this.garrison++;
-        neutral.recruits--; 
-        neutral.recruitcounter++; 
-        $(this).css('background-color','rgba(77,37,4,0.7)').html(this.garrison+'<br>'+this.owner);
-        
-        if(neutral.recruitcounter >= 2){
+        // console.log(neutral.recruitcounter); 
+        $(this).css('background-color','rgba(77,37,4,0.5)').html(this.garrison+'<br>'+this.owner);
+        console.log(counter2);
+        if(neutral.recruitcounter >= 2 && counter2 == 4){
           player1.recruitcounter = 0;
-          $('#sidebar').css('background-color','rgba(17,63,99,1)');
+          counter2 = 0;
+          $('#sidebar').css('background-color','rgba(17,63,99,1)'); //change to player1 color
+        }
+        else if(neutral.recruitcounter >= 2 && counter2 == 2){
+          player2.recruitcounter = 0;
+          $('#sidebar').css('background-color','rgba(75,111,79,1)'); //change to player2 color
         }
       }
-      else if(player1.recruits <= 0){
+      //player 2 deploy twice
+      else if(player1.recruitcounter >= 2 && this.owner!= 'player1' && this.owner!= 'neutral'){
+        counter2++;
+        // console.log(counter2);
+        populate(player2);
+        this.owner = 'player2';
+        this.garrison++;
+        $(this).css('background-color','rgba(24,79,30,0.5)').html(this.garrison+'<br>'+this.owner);
+        
+        if(player2.recruitcounter >= 2){
+          neutral.recruitcounter = 0;
+          $('#sidebar').css('background-color','rgba(77,37,4,1)'); //change to neutral color
+        }
+      }
+
+      // //player2's neutral deploy twice
+      // else if(player2.recruitcounter >= 2 && neutral.recruitcounter < 2 && this.owner!= 'player1' && this.owner!= 'player2'){ 
+      //   populate(neutral);
+      //   this.owner = 'neutral';
+      //   this.garrison++;
+      //   // console.log(neutral.recruitcounter); 
+      //   $(this).css('background-color','rgba(77,37,4,0.5)').html(this.garrison+'<br>'+this.owner);
+        
+      //   if(neutral.recruitcounter >= 2){
+      //     console.log('hi');
+      //     player1.recruitcounter = 0;
+      //     $('#sidebar').css('background-color','rgba(75,111,79,1)'); //change to player2 color
+      //   }
+      // }
+
+      //when player1's player2's, and neutral's recruits reach zero...
+      else if(player1.recruits <= 0 && neutral.recruits <=0 && player2.recruits <=0){
         alert('You have no more recruits. Should have enforced that ten-child law...');
         $('#advance_btn').text('the other guy\'s turn').show();
         
       }
+      //catch over clicking someone else's marked province
       else{
-        alert('Someone got this tile already! Just invade it later. Easy.');
+        alert('Someone got this tile already! Just invade it later.');
       }
+
+      //update recruit list
+      $('#phase_log p').html('player1 recruits: '+ player1.recruits +
+                             '<br>player2 recruits: '+ player2.recruits +
+                             '<br>neutral recruits: ' + neutral.recruits);
     });
   }
-
 
   //moving troops around
   function attack(){
