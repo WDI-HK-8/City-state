@@ -83,21 +83,38 @@ $(document).ready(function (){
 
     //initialize roll button for setup phase
     $('#roll_btn').click(function(){
-      one_diceroll();
-      $('#phase_log em').html('player1 roll: ' + player1.roll + '<br>player2 roll: ' + player2.roll);
-      $('#roll_btn').hide();
-
-      //ternary check for who goes first
-      player1.roll > player2.roll ? 
-      player1.lead = true : player1.roll != player2.roll ? player2.lead = true
-        : player2.lead = 'tie', player1.lead ='tie';
-      console.log(player1.lead, player2.lead);
-    
+      one_diceroll(); //sets .lead property
+      show_winner(); //
     });
   }
 
 
   //---------global functions------------
+  //determine winner of roll
+  function show_winner(){
+    if(player1.roll > player2.roll){
+      player1.lead = true;
+      player2.lead = false;
+      $('#roll_btn').hide();
+      $('#phase_log p').text('player1 starts');
+      $('#phase_btn').show();
+    }
+    else if(player1.roll < player2.roll){
+      player1.lead = false;
+      player2.lead = true;
+      $('#roll_btn').hide();
+      $('#phase_log p').text('player2 starts');
+      $('#phase_btn').show();
+    }
+    else if(player1.roll === player2.roll){
+      player1.lead = 'tie';
+      player2.lead = 'tie';
+      $('#phase_log em').text('you both rolled the same numbers, roll again!');
+    }
+    $('#phase_log em').html('player1 roll: ' + player1.roll + '<br>player2 roll: ' + player2.roll +'<br>');
+  }
+
+
   //output adjacent range
   function move_range(data_position){
     var left = [data_position[0]-1, data_position[1]];
