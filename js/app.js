@@ -133,14 +133,13 @@ $(document).ready(function (){
   }
 
   function start_setup(){ //
-    alert('You must setup your troops now');
-    $('#roll_btn').text('let see who goes first');
+    $('#phase_log p').text('You must roll to see who goes first');
+    $('#roll_btn').text('See who goes first');
     $('#roll_btn').show();
     player1.recruits = 10;
     player2.recruits = 10;
     neutral.recruits = 10;
-    //compute winner. assign attribute/property to player 1;
-    //assign 40 recruits to property player1.recruits, player2.recruits, neutral.recruits;
+    
     //activate province event click with a counter of 2 for player recruits and another 2 for neutral recruits
     //switch turns until the all recruits are zero
   }
