@@ -118,9 +118,9 @@ $(document).ready(function (){
   function recruit_setup(){
 
     //initialize recruit count
-    player1.recruits = 2;
-    player2.recruits = 2;
-    neutral.recruits = 4;
+    player1.recruits = 6;
+    player2.recruits = 6;
+    neutral.recruits = 12;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
@@ -137,7 +137,7 @@ $(document).ready(function (){
     owner.recruitcounter++;
   }
   //adds troop to cell on click this. should run AFTER recruit_setup has run.
-  function add_troops(){
+  function add_troops(){ //BUG: adds troops for player2 when neutral is adding
     // alert('Player1: Place Troops');
     $('#phase_log em').hide();
     $('#sidebar').css('background-color','rgba(17,63,99,1)'); //player1 color cue
@@ -192,7 +192,7 @@ $(document).ready(function (){
         $('#sidebar').css('background-color','#2d2d2d');
         $('.province').unbind();
         $('#test').hide();
-        $('#advance_btn').text('the other guy\'s turn').show();
+        $('#advance_btn').text('Start Play').show();
         alert('You are ready to begin your turn.');
       }
       //catch over clicking someone else's marked province
@@ -211,10 +211,19 @@ $(document).ready(function (){
   function attack(){
 
     //unbind() add_troops function's click event
-    counter = 0; //reset counter    
+    counter = 0; //reset counter
+
+    $('.province').hover(
+        function(){
+          $( this ).toggleClass( "active" ).css('border','orange 5px solid');
+        },
+        function(){
+          $( this ).toggleClass( "active" ).css('border', '1px solid darkgrey');
+        }
+    );    
     $('.province').click(function(){
       //checks if attack origin is selected, restricted by counter
-      if(counter < 1){
+      if(counter < 1 && this.owner == 'player1' && this.garrison > 1){
         //one attacker must stay behind
         var attack_origin = this.garrison-1; 
         counter++;
@@ -233,25 +242,31 @@ $(document).ready(function (){
           $(element).html(element.garrison+'<br>'+element.owner);
         });
       }
-      //select attack_tgt
-      else if(counter == 1){
-          //if double-click over the adjacent provinces...
+      //select attack_origin, allows only one
+      else if(counter == 1){ 
+        //select your own cities show the adjacent provinces...
         $([up, down, left, right]).click(function(){ 
+          counter++;
           //check for your own land
           if(this.owner == 'player1'){
             alert('Sir, that\'s your own province. Are you trying to start a civil war?');
           }
-          
           //else if() //right click to get out/unbind,set of selection state...
           //otherwise, paint it red, increase counter, one-time target only.
           else{
             $(this).css('background-color','red');
-            counter++;
             $([up, down, left, right]).unbind('click');
             $('#confirm_btn').text('To battle!').show();
           }
 
         });
+      }
+      //if what you click is not your own, and you have selected
+      else if(this.owner != 'player1' && counter < 2){
+        alert('Pick your own territory to attack from'+counter);
+      }
+      else if(this.owner == 'player1' && this.garrison <= 1 && counter < 2){
+        alert('attacking provinces must have more than one troop to launch attacks');
       }
 
 
