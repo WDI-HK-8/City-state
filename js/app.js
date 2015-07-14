@@ -16,17 +16,21 @@ $(document).ready(function (){
     [1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],
     [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11] //85 water cells
   ];
+  var phase_counter=0;
   var x;
   var y;
   var z;
   var player1={};
   var player2={};
   var neutral={};
+  var total_start_troops;
 
-  init();
-  start_setup();
+  grid_init();
+  mvrange_map();
+  hover_status();
+  roll_setup();
   //----------initialize grid------------
-  function init(){
+  function grid_init(){
     //initialize twelve rows first
     for (y = 0; y < 12; y++){
       $('#map_grid').append(row);
@@ -43,25 +47,40 @@ $(document).ready(function (){
       this.pos = [index%12, $(element).parent().index()]; // [x,y] coords
       this.owner = ['player 1', 'player 2', 'neutral']; //territory owner
       this.garrison = 0;//initial garrison number;
-
-      //checks for water cells
-      // $(water_cells).each(function(index, element){
-      //   console.log(this.pos, element);
-      //   if(this.pos == element){
-      //     this.css('background-color', 'blue');
-      //   }
-
-      // });
     });
 
-    //Initialize movement range with move_range function
+
+    //initialize roll button for setup phase
+
+    $('#roll_btn').click(function(){
+      one_diceroll(); //sets .roll property
+      show_winner(); //compares .roll property to lead, change text 
+    });
+
+    //initialize phase button for entering a new phase
+    $('#phase_btn').click(function(){
+      recruit_setup();
+      $(this).hide();
+    });
+
+
+    $('#cancel_btn, #roll_btn, #phase_btn, #confirm_btn').hide();
+    $('#setup_ind').css('color','#fbabab');
+  }
+
+
+  //---------map-related------------
+
+  //Initialize movement range with move_range function
+  function mvrange_map(){
     $('.province').each(function(){
       var mvrange = move_range(this.pos); 
       this.mvrange = mvrange;
     });
+  }
 
-    //---------output xy and range---------
-    //provides cell indexing on hover
+  //provides province info on hover
+  function hover_status(){
     $('.province').hover(function(){
       var click_xy = this.pos;
       $('#test').html(
@@ -75,45 +94,11 @@ $(document).ready(function (){
         + this.mvrange[2]
         + '<br> right range: '
         + this.mvrange[3]
+        + '<br> troops garrison: '
+        + this.garrison
         );
     });
-
-    $('#cancel_btn, #roll_btn, #phase_btn, #confirm_btn').hide();
-    $('#setup_ind').css('color','#fbabab');
-
-    //initialize roll button for setup phase
-    $('#roll_btn').click(function(){
-      one_diceroll(); //sets .lead property
-      show_winner(); //
-    });
   }
-
-
-  //---------global functions------------
-  //determine winner of roll
-  function show_winner(){
-    if(player1.roll > player2.roll){
-      player1.lead = true;
-      player2.lead = false;
-      $('#roll_btn').hide();
-      $('#phase_log p').text('player1 starts');
-      $('#phase_btn').show();
-    }
-    else if(player1.roll < player2.roll){
-      player1.lead = false;
-      player2.lead = true;
-      $('#roll_btn').hide();
-      $('#phase_log p').text('player2 starts');
-      $('#phase_btn').show();
-    }
-    else if(player1.roll === player2.roll){
-      player1.lead = 'tie';
-      player2.lead = 'tie';
-      $('#phase_log em').text('you both rolled the same numbers, roll again!');
-    }
-    $('#phase_log em').html('player1 roll: ' + player1.roll + '<br>player2 roll: ' + player2.roll +'<br>');
-  }
-
 
   //output adjacent range
   function move_range(data_position){
@@ -125,27 +110,83 @@ $(document).ready(function (){
     return [up, down, left, right];
   }
 
+  //---------troop-related------------
+  function recruit_setup(){
+    player1.recruits = 10;
+    player2.recruits = 15;
+    neutral.recruits = 20;
+    $('#phase_log p').html('player1 recruits: '+ player1.recruits +
+                           '<br>player2 recruits: '+ player2.recruits +
+                           '<br>neutral recruits' + neutral.recruits);
+    add_troops();
+  }
+  function add_troops(){
+    //adds troop to cell on click this. should run AFTER recruit_setup has run.
+    $('.province').click(function(){
+      if(player1.recruits > 0){
+        this.garrison++;
+        player1.recruits--; 
+        console.log(this.garrison, player1.recruits);
+      }
+      else if(player1.recruits <= 0){
+        alert('You have no more recruits. Should have enforced that ten-child law...');
+      }
+    });
+  }
+
+
+  //---------dice-roll-calculation------------
+  
   //a random dice roll
   function one_diceroll(){
     player1.roll = Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
     player2.roll = Math.ceil(Math.random()*6);
-    
   }
 
-  function start_setup(){ //
+  //determine winner of roll
+  function show_winner(){
+    if(player1.roll > player2.roll){
+      player1.lead = true;
+      player2.lead = false;
+      $('#roll_btn').hide();
+      $('#phase_log p').text('player1 starts');
+      $('#phase_btn').show().text('Just give me my troops already');
+    }
+    else if(player1.roll < player2.roll){
+      player1.lead = false;
+      player2.lead = true;
+      $('#roll_btn').hide();
+      $('#phase_log p').text('player2 starts');
+      $('#phase_btn').show().text('Place your troops');
+    }
+    else if(player1.roll === player2.roll){
+      player1.lead = 'tie';
+      player2.lead = 'tie';
+      $('#phase_log em').text('you both rolled the same numbers, roll again!');
+    }
+    $('#phase_log em').html('player1 roll: ' + player1.roll + '<br>player2 roll: ' + player2.roll +'<br>');
+  }
+
+  //initial setup dice roll of game
+  function roll_setup(){ 
     $('#phase_log p').text('You must roll to see who goes first');
     $('#roll_btn').text('See who goes first');
     $('#roll_btn').show();
-    player1.recruits = 10;
-    player2.recruits = 10;
-    neutral.recruits = 10;
     
     //activate province event click with a counter of 2 for player recruits and another 2 for neutral recruits
     //switch turns until the all recruits are zero
   }
 
+
+  //---------player-turn management------------
+
+  //phase handler 
+  function next_phase(){
+  }
+
   function attack(){
   }
+
   function fortify(){
   }
 });
