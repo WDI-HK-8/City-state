@@ -34,7 +34,7 @@ h1{
 	border:1px solid darkgrey;
 	text-align: center;
 	left:15px;
-	color:#57e167;
+	color:rgb(0,186,13);
 	font-size: 15px;
 	padding: 10px;
 }
@@ -85,9 +85,9 @@ article{
 }
 
 #control_box button{
-	padding: 10px;
-	margin: 5px 10px;
-	position: absolute;
+	padding: 45px;
+	font-size: 25px;
+	margin: auto;
 }
 
 #test{
