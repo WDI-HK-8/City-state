@@ -1,5 +1,9 @@
 html, body, section {
     height: 800px;
+    font-family: Arvo;
+}
+h1{
+	font-size: 50px;
 }
 
 #splitter{
@@ -30,7 +34,8 @@ html, body, section {
 	text-align: center;
 	left:15px;
 	color:#57e167;
-	font-size: 20px;
+	font-size: 15px;
+	padding: 10px;
 }
 
 .province:hover{
@@ -49,6 +54,7 @@ html, body, section {
 	float:right;
 	width:auto;
 	background-color: #2d2d2d;
+
 }
 
 header{
@@ -69,6 +75,7 @@ p small{
 	min-height: 150px;
 	background-color: #f2e9c3;
 	margin: 5px 10px;
+	font-size: 20px;
 }
 
 article{
@@ -79,8 +86,14 @@ article{
 #control_box button{
 	padding: 10px;
 	margin: 5px 10px;
+	position: absolute;
 }
 
 #test{
-	color:red;
+	text-align: right;
+	color:white;
+	position: fixed;
+	left:20px;
+	bottom:100px;
+	background-color: rgba(148,9,9,0.6) ;
 }
