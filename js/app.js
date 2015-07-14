@@ -47,6 +47,7 @@ $(document).ready(function (){
       this.owner; //territory owner
       this.garrison = 0;//initial garrison number;
     });
+<<<<<<< HEAD
  
     //initialize phase button for entering a new phase
     $('#advance_btn').click(function(){
@@ -62,7 +63,6 @@ $(document).ready(function (){
       else if(phase_counter==3){
 
       }
-
       $(this).hide();
     });
 
@@ -95,7 +95,9 @@ $(document).ready(function (){
         + this.mvrange[2]
         + '<br> Right range: '
         + this.mvrange[3]
+
         + '<br> Troops garrison: '
+
         + this.garrison
         );
     });
@@ -105,13 +107,16 @@ $(document).ready(function (){
   function move_range(data_position){
     var left = [data_position[0]-1, data_position[1]];
     var right = [data_position[0]+1, data_position[1]];
+
     var up = [data_position[0]-12, data_position[1]-1];
     var down = [data_position[0]+12, data_position[1]+1];
+
     return [up, down, left, right];
   }
 
   //---------troop-related------------
   function recruit_setup(){
+
     //initialize recruit count
     player1.recruits = 2;
     player2.recruits = 2;
@@ -263,6 +268,14 @@ $(document).ready(function (){
     player2.roll = Math.ceil(Math.random()*6);
   }
 
+  //---------dice-roll-calculation------------
+  
+  //a random dice roll
+  function one_diceroll(){
+    player1.roll = Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
+    player2.roll = Math.ceil(Math.random()*6);
+  }
+
   //determine winner of roll
   function show_winner(){
     if(player1.roll > player2.roll){
@@ -284,6 +297,7 @@ $(document).ready(function (){
       player2.lead = 'tie';
       $('#phase_log em').text('IT\'S A TIE! Roll again!');
     }
+
     $('#phase_log em').html('Player1 rolled: ' + player1.roll + '<br>Player2 rolled: ' + player2.roll +'<br>');
   }
 
@@ -309,6 +323,10 @@ $(document).ready(function (){
 
   //phase handler 
   function next_phase(){
+
+  }
+
+  function attack(){
   }
 
   function fortify(){
