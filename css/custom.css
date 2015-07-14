@@ -29,6 +29,8 @@ html, body, section {
 	border:1px solid darkgrey;
 	text-align: center;
 	left:15px;
+	color:#57e167;
+	font-size: 20px;
 }
 
 .province:hover{
