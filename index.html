@@ -13,6 +13,7 @@
 		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
 		<!-- LIBRARIES -->
+		<link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
 		<script src="bower_components/jquery/dist/jquery.min.js"></script>
 		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -25,8 +26,9 @@
 		<img id="map" src="assets/img/map.jpg">
 		<section id="map_grid">
 		</section>
-		<section id="sidebar">
+		<section id="sidebar" class="col-xs-offset-8 col-xs-4">
 			<header>
+				<h1>City-state</h1>
 				<h3>Province Info</h3>
 			</header>
 			<article id="status_log">
@@ -46,17 +48,18 @@
 				</h3>
 			</header>
 			<article id="phase_log">
-				<em></em><br><br>
-				<p></p><br><br>
-				<small>PRESS CONFIRM TO SET BEFORE ADVANCING TO NEXT PHASE</small>
+				<em></em><br>
+				<p></p><br>
+				<small>ALWAYS CONFIRM BEFORE ADVANCING TO NEXT PHASE</small>
 			</article>
 			<article id="control_box">
 				<button id="confirm_btn" class="btn btn-default">Confirm</button>
-				<button id="cancel_btn" class="btn btn-default">Cancel</button><br><br> 
+				<button id="cancel_btn" class="btn btn-default">Cancel</button><br>
 				<button id="advance_btn" class="btn btn-default">NEXT PHASE </button>
 				<button id="roll_btn" class="btn btn-default">Roll Dice</button>
+
 			</article>
-			<article id="test"></article>
+			<article id="test"></article>	
 
 		</section>
 	</body>	
