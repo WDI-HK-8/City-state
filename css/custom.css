@@ -3,8 +3,12 @@ html, body, section {
     font-family: 'PT Sans', sans-serif;
 }
 h1{
-	font-size: 70px;
+	font-size: 50px;
 	font-weight: bold;
+}
+
+h3{
+	color:white;
 }
 
 #splitter{
@@ -57,13 +61,10 @@ h1{
 	background-color: #2d2d2d;
 	height: 100%;
 	padding: 20px;
-	position: fixed;
-
 }
 
 header{
 	color:crimson;
-	padding:0px 10px;
 }
 
 article ul{
@@ -80,6 +81,7 @@ p small{
 	background-color: #f2e9c3;
 	margin: 5px 10px;
 	font-size: 20px;
+	text-align: center;
 }
 
 article{
@@ -88,9 +90,13 @@ article{
 }
 
 #control_box button{
-	padding: 35px;
+	padding: 25px;
 	font-size: 25px;
 	margin: auto;
+}
+
+td, th{
+	text-align: center;
 }
 
 #tooltip{
@@ -130,3 +136,6 @@ article{
 	border: orange 5px solid !important;
 }
 
+#invade_ind{
+	color: #fbabab;
+}
