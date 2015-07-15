@@ -28,6 +28,12 @@ $(document).ready(function (){
   mvrange_map();
   roll_setup();
 
+  $('.main').split({
+    orientation: 'vertical',
+    limit: 10,
+    position: '70%'
+  });
+
   //----------initialize grid------------
   function grid_init(){
     //initialize twelve rows first
@@ -59,23 +65,22 @@ $(document).ready(function (){
         attack();
         // console.log('attack is run in phase_counter '+phase_counter);
       }
-<<<<<<< HEAD
-      else if(phase_counter==3){
 
+      else if(phase_counter==3){
+        fortify();
       }
-=======
->>>>>>> Added new animations for UI and battle sequence
       $(this).hide();
     });
 
     //initialize cancel button for moving phases
-    $('#cancel_btn').click(function(){
-      
+    $('#attack_btn').click(function(){
+      attack();
+      $(this).hide();
     });
 
 
     $('#turn_reminder').hide();
-    $('#cancel_btn, #roll_btn, #advance_btn, #confirm_btn').hide();
+    $('#attack_btn, #roll_btn, #advance_btn, #confirm_btn').hide();
     $('#setup_ind').css('color','#fbabab');
   }
 
@@ -143,6 +148,7 @@ $(document).ready(function (){
   //adds troop to cell on click this. should run AFTER recruit_setup has run.
   function add_troops(){ //BUG: adds troops for player2 when neutral is adding
     $('#tooltip').text('It\'s '+ leader + '\'s turn. Select a province');
+    $('#deploy_sound').trigger('play');
     $('#phase_log em').hide();
     $('#sidebar').css('background-color','rgba(17,63,99,1)'); //player1 color cue
     $('.province').click(function(){
@@ -153,13 +159,13 @@ $(document).ready(function (){
         $('#tooltip').text("To attack, select the \'launch attack\' button");
         $('#sidebar').css('background-color','#2d2d2d');
         $('.province').unbind();
-        $('#advance_btn').text('Launch attack').show(); // runs attack
-        $('#cancel_btn').text('Skip to next phase').show();
+        $('#attack_btn').text('Launch attack').show();//runs attack again
+        $('#advance_btn').text('Skip to next phase').show(); 
       }
 
       //player 1 deploy twice
       else if(player1.recruits > 0 && player1.recruitcounter < 2 && this.owner!= 'neutral' && this.owner!= second_player){ 
-        
+        $('#recruit_sound').trigger('play');
         counter++; //counter to keep cycle sustainable
         populate(player1);
         this.owner = leader;
@@ -176,6 +182,7 @@ $(document).ready(function (){
       }
       //neutral deployment deploy twice
       else if(player1.recruitcounter >= 2 && neutral.recruitcounter < 2 && this.owner!= leader && this.owner!= second_player){ 
+        $('#recruit_sound').trigger('play');
         populate(neutral);
         this.owner = 'neutral';
         this.garrison++;
@@ -198,6 +205,7 @@ $(document).ready(function (){
       }
       //player 2 deploy twice
       else if(player1.recruitcounter >= 2 && this.owner!= leader && this.owner!= 'neutral'){
+        $('#recruit_sound').trigger('play');
         counter++;
         populate(player2);
         this.owner = second_player;
@@ -281,7 +289,6 @@ $(document).ready(function (){
 
             //initiates a button for attacking
             $('#confirm_btn').text('Confirm attack').show().click(function(){
-              // $('.province').unbind('click');
               battle(attacker, defender);
 
               //after the battle is over, revert color labeling
@@ -380,7 +387,7 @@ $(document).ready(function (){
     //update log of province cells upon each battle
     $(attacker).html(''+attacker.garrison+'<br>'+attacker.owner+'');
     $(defender).html(''+defender.garrison+'<br>'+defender.owner+'');
-    
+    $('#battle_effect1').trigger('play');
     if(battle_losses[0] > 0){
       $(attacker).append('<br><sub class="battle_tally">-'+battle_losses[0]+'</sub>');
       $('.battle_tally').hide();
@@ -466,6 +473,7 @@ $(document).ready(function (){
 
   //determine winner of roll
   function show_winner(){
+    $('#dice_roll_sound').trigger('play');
     if(player1.roll > player2.roll){
       $('#roll_btn').hide();
       $('#phase_log p').text('Player 1 starts!');
@@ -483,14 +491,10 @@ $(document).ready(function (){
     else if(player1.roll === player2.roll){
       $('#phase_log em').text('IT\'S A TIE! Roll again!');
     }
-<<<<<<< HEAD
 
-    $('#phase_log em').html('Player1 rolled: ' + player1.roll + '<br>Player2 rolled: ' + player2.roll +'<br>');
-  }
-=======
     $('#status_log').html('<span id="player1_roll">Player 1</span> rolled: <br><span id="player1_roll">' + player1.roll + '</span><br><span id="player2_roll">Player 2</span> rolled:<br> <span id="player2_roll">' + player2.roll +'</span><br>');
   } 
->>>>>>> Added new animations for UI and battle sequence
+
 
   //initial setup dice roll of game
   function roll_setup(){ 
@@ -511,17 +515,15 @@ $(document).ready(function (){
   } 
 
 
-  //---------player-turn management------------
 
-  //phase handler 
-  function next_phase(){
+  //---------Fortification/move phase------------
 
-  }
-
-  function attack(){
-  }
 
   function fortify(){
+    //on click of your own troops
+    //show tooltip
+    //show log of instructions
+    //
   }
 
 });//------------END OF .ready()--------------

@@ -16,52 +16,68 @@
 		<!-- <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'> -->
 		<script src="bower_components/jquery/dist/jquery.min.js"></script>
 		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="bower_components/jquery.splitter/js/jquery.splitter-0.15.0.js"></script>
 		<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="bower_components/jquery.splitter/css/jquery.splitter.css">
 
 		<!-- MAIN FILES -->
 		<script src="js/app.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/custom.css">
 	</head>
 	<body class="main fluid-container">
-		<img id="map" src="assets/img/map.jpg">
 		<section id="map_grid">
+			<img id="map" src="assets/img/map.jpg">
 		</section>
-		<section id="sidebar" class="col-xs-offset-8 col-xs-4">
-			<header>
-				<h1>City-state</h1>
-				<h3>Game Info</h3>
-			</header>
-			<article id="status_log">
-				<ul>
-				    <li></li>
-				    <li></li>
-				    <li></li>
-				    <li></li>
-				</ul>
-			</article>
-			<header>
-				<h3>
-					<span id="setup_ind">Setup /</span> 
-					<span id="deploy_ind">Deploy</span> / 
-					<span id="invade_ind">Invade</span> / 
-					<span id="fortify_ind">Fortify</span>
-				</h3>
-			</header>
-			<article id="phase_log">
-				<em></em><br>
-				<p></p><br>
-				<small>ALWAYS CONFIRM BEFORE ADVANCING TO NEXT PHASE</small>
-			</article>
-			<article id="control_box">
-				<button id="confirm_btn" class="btn btn-default col-xs-12"></button>
-				<button id="advance_btn" class="btn btn-default col-xs-12"></button>
-				<button id="roll_btn" class="btn btn-default col-xs-12">Roll Dice</button>
-				<button id="cancel_btn" class="btn btn-default col-xs-12"></button><br>
+		<section id="sidebar" class="col-xs-4">
+			<audio id="battle_effect1" preload="none"> 
+			   <source src="assets/audio/attack_sound.mp3" type="audio/mpeg">
+			</audio>
+			<audio id="dice_roll_sound" preload="none"> 
+			   <source src="assets/audio/dice_roll.mp3" type="audio/mpeg">
+			</audio>
+			<audio id="deploy_sound" preload="none"> 
+			   <source src="assets/audio/deploy.mp3" type="audio/mpeg">
+			</audio>
+			<audio id="recruit_sound" preload="none"> 
+			   <source src="assets/audio/recruit_troop.mp3" type="audio/mpeg">
+			</audio>
 
-			</article>
-			<article id="tooltip"></article>
-			<article id="turn_reminder"></article>	
+			<div id="sidebar_wrapper">
+				<header>
+					<h1>City-state</h1>
+					<h3>Game Info</h3>
+				</header>
+				<article id="status_log">
+					<ul>
+					    <li></li>
+					    <li></li>
+					    <li></li>
+					    <li></li>
+					</ul>
+				</article>
+				<header>
+					<h3>
+						<span id="setup_ind">Setup /</span> 
+						<span id="deploy_ind">Deploy</span> / 
+						<span id="invade_ind">Invade</span> / 
+						<span id="fortify_ind">Fortify</span>
+					</h3>
+				</header>
+				<article id="phase_log">
+					<em></em><br>
+					<p></p><br>
+					<small>ALWAYS CONFIRM BEFORE ADVANCING TO NEXT PHASE</small>
+				</article>
+				<article id="control_box">
+					<button id="attack_btn" class="btn btn-default col-xs-12"></button><br>
+					<button id="confirm_btn" class="btn btn-default col-xs-12"></button>
+					<button id="advance_btn" class="btn btn-default col-xs-12"></button>
+					<button id="roll_btn" class="btn btn-default col-xs-12">Roll Dice</button>
 
-		</section>
+				</article>
+				<article id="tooltip"></article>
+				<article id="turn_reminder"></article>	
+			</section>
+		</div>
 	</body>	
 </html>
