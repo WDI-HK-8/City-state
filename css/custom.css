@@ -1,6 +1,8 @@
+@import url(http://fonts.googleapis.com/css?family=Cinzel);
+
 html, body, section {
-    height: 800px;
-    font-family: 'PT Sans', sans-serif;
+	font-family: 'Cinzel', serif;
+  height: 800px;
 }
 h1{
 	font-size: 50px;
@@ -9,6 +11,7 @@ h1{
 
 h3{
 	color:white;
+	font-size: 20px;
 }
 
 #splitter{
@@ -37,10 +40,11 @@ h3{
 	height: 63px;
 	border:1px solid darkgrey;
 	text-align: center;
-	left:15px;
-	color:crimson;
-	font-size: 15px;
-	padding: 10px;
+	left:14px;
+	font-size: 15px !important; 
+	padding: 4px;
+	cursor: pointer;
+	font-family: sans-serif;
 }
 
 .province:hover{
@@ -59,7 +63,7 @@ h3{
 	float:right;
 	width:auto;
 	background-color: #2d2d2d;
-	height: 100%;
+	height: auto;
 	padding: 20px;
 }
 
@@ -78,10 +82,17 @@ p small{
 
 #phase_log, #status_log{
 	min-height: 150px;
-	background-color: #f2e9c3;
 	margin: 5px 10px;
 	font-size: 20px;
+}
+
+#phase_log{
 	text-align: center;
+	background-color: #f2e9c3;
+}
+
+#status_log{
+	background-color: #b0d5db;
 }
 
 article{
@@ -91,12 +102,32 @@ article{
 
 #control_box button{
 	padding: 25px;
+	border: 2px darkred solid;
 	font-size: 25px;
 	margin: auto;
 }
 
+#control_box button:hover{
+	background-color: darkred;
+	color:white;
+}
+
 td, th{
 	text-align: center;
+}
+
+#phase_log p{
+	color:darkred;
+}
+
+#turn_reminder{
+	position: fixed;
+	margin: auto;
+	left:540px;
+	bottom:50px;
+	background-color: rgb(216,164,38);
+	padding: 20px;
+	font-size: 30px;
 }
 
 #tooltip{
@@ -108,19 +139,35 @@ td, th{
 	font-size: 30px;
 	background-color: rgba(148,9,9,0.8);
 }
+
+.battle_tally{
+	position: absolute;
+	bottom:45%;
+	left:30%;
+	color: red;
+	font-size: 40px;
+}
+
+.garrison_color{
+	color:springgreen;
+}
+
 .p1_colors{
 	background-color: rgba(0,15,88,0.5);
+	color:blue;
 }
 .p2_colors{
 	background-color: rgba(24,79,30,0.5);
+	color:purple;
 }
 .neut_colors{
 	background-color: rgba(77,37,4,0.5);
+	color:khaki;
 }
 
 /*red*/
 .defender_color{ 
-	background-color: rgba(255,0,0,0.5) !important;
+	background-color: rgba(255,0,0,0.7) !important;
 }
 /*light red*/
 .adjacent_color{
@@ -128,14 +175,22 @@ td, th{
 }
 /*light blue*/
 .attacker_color{
-	background-color: rgba(150,223,229,0.8) !important;
+	background-color: rgba(150,0,38,0.8) !important;
 }
 
 /*hover on attack*/
 .hover_attack{
-	border: orange 5px solid !important;
+	border: red 2.5px solid !important;
 }
 
-#invade_ind{
+.invade_ind{
 	color: #fbabab;
 }
+
+#player1_roll{
+	color:rgba(0,15,88,1);
+}
+#player2_roll{
+	color:rgba(24,79,30,1);
+}
+
