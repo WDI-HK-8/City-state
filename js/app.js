@@ -16,7 +16,7 @@ $(document).ready(function (){
     [1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],
     [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11] //85 water cells
   ];
-  var up,down,left,right, attackers;
+  var up,down,left,right, attackers, leader, second_player;
   var x,y,z;
   var phase_counter=0;
   var player1={};
@@ -26,7 +26,6 @@ $(document).ready(function (){
 
   grid_init();
   mvrange_map();
-  hover_status();
   roll_setup();
 
   //----------initialize grid------------
@@ -44,10 +43,9 @@ $(document).ready(function (){
     //initialize properties of each grid cell
     $('.province').each(function(index, element){
       this.pos = [index, $(element).parent().index()]; // [x,y] coords
-      this.owner; //territory owner
+      this.owner = 'nobody'; //territory owner
       this.garrison = 0;//initial garrison number;
     });
-<<<<<<< HEAD
  
     //initialize phase button for entering a new phase
     $('#advance_btn').click(function(){
@@ -55,10 +53,11 @@ $(document).ready(function (){
       //checks only sets recruit setup once, after second-time clicked
       if(phase_counter==1){//run recruit setup
         recruit_setup(); 
+        // console.log('attack is run in phase_counter '+phase_counter);
       }
       else if(phase_counter==2){//run to progress into the main of the game
         attack();
-        phase_counter++;
+        // console.log('attack is run in phase_counter '+phase_counter);
       }
       else if(phase_counter==3){
 
@@ -77,28 +76,6 @@ $(document).ready(function (){
   function mvrange_map(){
     $('.province').each(function(){
       this.mvrange = move_range(this.pos); 
-    });
-  }
-
-  //provides province info on hover
-  function hover_status(){
-    $('.province').hover(function(){
-      $('#test').html(
-        'Map cell selected: ' 
-        + this.pos
-        + '<br> Up range: '
-        + this.mvrange[0]
-        + '<br> Down range: '
-        + this.mvrange[1]
-        + '<br> Left range: '
-        + this.mvrange[2]
-        + '<br> Right range: '
-        + this.mvrange[3]
-
-        + '<br> Troops garrison: '
-
-        + this.garrison
-        );
     });
   }
 
@@ -129,9 +106,7 @@ $(document).ready(function (){
 
   function reupdate_log(){
     //re-update the game log on each cell selection... NOTE TO SELF: Refactor this later
-    $('#phase_log p').html('Player1 recruits: '+ player1.recruits +
-                           '<br>Player2 recruits: '+ player2.recruits +
-                           '<br>Neutral recruits: ' + neutral.recruits);
+    $('#phase_log p').html('<table><tr><th>Player1 troops:</th><th>Player2 troops:</th><th>Neutral troops:</th></tr><tr><td>'+ player1.recruits+'</td><td>'+ player2.recruits+'</td><td>'+ neutral.recruits+'</td></tr></table>');
   }
 
   //add_troops() handler...NOTE TO SELF: Refactor more with 'this' via fun.bind() to bind to click element
@@ -139,50 +114,69 @@ $(document).ready(function (){
     owner.recruits--; 
     owner.recruitcounter++;
   }
+
+  function getLeader(){
+
+  }
+
   //adds troop to cell on click this. should run AFTER recruit_setup has run.
   function add_troops(){ //BUG: adds troops for player2 when neutral is adding
-    // alert('Player1: Place Troops');
+    $('#tooltip').unbind();
+    $('#tooltip').text('It\'s '+ leader + '\'s turn.');
     $('#phase_log em').hide();
     $('#sidebar').css('background-color','rgba(17,63,99,1)'); //player1 color cue
     $('.province').click(function(){
       
+      //when player1's player2's, and neutral's recruits reach zero...
+      if(player1.recruits <= 0 && neutral.recruits <=0 && player2.recruits <=0){
+        alert('all zeroed');
+        $('#tooltip').text("To attack, select the \'launch attack\' button");
+        $('#sidebar').css('background-color','#2d2d2d');
+        $('.province').unbind();
+        $('#advance_btn').text('Launch attack').show(); // runs attack
+        $('#cancel_btn').text('Next Phase').show();
+      }
       //player 1 deploy twice
-      if(player1.recruits > 0 && player1.recruitcounter < 2 && this.owner!= 'neutral' && this.owner!= 'player2'){ 
+      else if(player1.recruits > 0 && player1.recruitcounter < 2 && this.owner!= 'neutral' && this.owner!= second_player){ 
         counter++; //counter to keep cycle sustainable
         populate(player1);
-        this.owner = 'player1';
+        this.owner = leader;
         this.garrison++;
         //player color
         $(this).toggleClass('p1_colors').css('background-color', 'rgba(0,15,88,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
 
         //set for neutral
         if(player1.recruitcounter >= 2){ //once you deploy twice
-          neutral.recruitcounter = 0; //reset the turn counter for next object
+          neutral.recruitcounter = 0; //reset the turn counter for next object you are to recruit for
           $('#sidebar').css('background-color','rgba(77,37,4,1)');
+          $('#tooltip').text('It\'s time for '+leader+' to place neutral troops');
         }
       }
-      //player1's neutral deploy twice
-      else if(player1.recruitcounter >= 2 && neutral.recruitcounter < 2 && this.owner!= 'player1' && this.owner!= 'player2'){ 
+      //neutral deployment deploy twice
+      else if(player1.recruitcounter >= 2 && neutral.recruitcounter < 2 && this.owner!= leader && this.owner!= second_player){ 
         populate(neutral);
         this.owner = 'neutral';
         this.garrison++;
         //player color
         $(this).toggleClass('neut_colors').css('background-color', 'rgba(77,37,4,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
+        
         if(neutral.recruitcounter >= 2 && counter == 4){
           player1.recruitcounter = 0;
           counter = 0;
           $('#sidebar').css('background-color','rgba(17,63,99,1)'); //change to player1 color
+          $('#tooltip').text('It\'s time to place '+ leader +'\'s troops');
         }
         else if(neutral.recruitcounter >= 2 && counter == 2){
           player2.recruitcounter = 0;
           $('#sidebar').css('background-color','rgba(75,111,79,1)'); //change to player2 color
+          $('#tooltip').text('It\'s time to place '+ second_player +'\'s troops');
         }
       }
       //player 2 deploy twice
-      else if(player1.recruitcounter >= 2 && this.owner!= 'player1' && this.owner!= 'neutral'){
+      else if(player1.recruitcounter >= 2 && this.owner!= leader && this.owner!= 'neutral'){
         counter++;
         populate(player2);
-        this.owner = 'player2';
+        this.owner = second_player;
         this.garrison++;
         //player color
         $(this).toggleClass('.p2_colors').css('background-color', 'rgba(24,79,30,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
@@ -190,18 +184,10 @@ $(document).ready(function (){
         if(player2.recruitcounter >= 2){
           neutral.recruitcounter = 0;
           $('#sidebar').css('background-color','rgba(77,37,4,1)'); //change to neutral color
+          $('#tooltip').text('It\'s time to place '+second_player+' neutral troops');
         }
       }
 
-      //when player1's player2's, and neutral's recruits reach zero...
-      else if(player1.recruits <= 0 && neutral.recruits <=0 && player2.recruits <=0){
-        $('#sidebar').css('background-color','#2d2d2d');
-        $('.province').unbind();
-        $('#test').hide();
-        alert('You are ready to begin your turn.');
-        $('#advance_btn').text('Launch attack').show();
-        $('#cancel_btn').text('Next Phase').show();
-      }
       //catch over clicking someone else's marked province
       else{
         $('#phase_log p').text('Someone got this tile already! Just invade it later.');
@@ -214,24 +200,26 @@ $(document).ready(function (){
 
   //choosing attack_origin and attack_tgt
   function attack(){
-
-    //unbind() add_troops function's click event
+    //initial message instructions
+    $('#phase_log p').html('It\'s'+leader+'\'s time to attack');
+    $('#tooltip').html(leader+'\'s attack');
+    
+    console.log('attack function called');
     counter = 0; //reset counter
 
-    $('.province').hover(
-        function(){
-          $( this ).toggleClass( "active" ).css('border','orange 5px solid');
-        },
-        function(){
-          $( this ).toggleClass( "active" ).css('border', '1px solid darkgrey');
-        }
-    );    
+    $('.province').hover(function(){
+      $( this ).toggleClass( "hover_attack" );
+    });    
     $('.province').click(function(){
       //checks if attack origin is selected, restricted by counter, should run once only
       
-      if(counter < 1 && this.owner == 'player1' && this.garrison > 1){
+      if(counter < 1 && this.owner == leader && this.garrison > 1){
         attacker = this; //assigns to global variable
         //one attacker must stay behind
+        $('#phase_log p').html("You have selected "+this.owner+'\'s'+ ' city:'
+                                +'<br>It has '+this.garrison+ 'troops garrisoned'
+                                +'<br>This city has no harbor to attack over water.'
+                              );
         var attack_origin = attacker.garrison-1; 
         counter++;
         $(this).css('border','orange 5px solid');
@@ -246,9 +234,10 @@ $(document).ready(function (){
         right = $('.province')[attack_range[3][0]];
         $([up,down,left,right]).each(function(index, element){
           $(element).css('background-color','invisible');
-          $(element).toggleClass('adjacent_color1');
+          $(element).toggleClass('adjacent_color');
           $(element).html(element.garrison+'<br>'+element.owner);
         });
+        $(attacker).toggleClass('attacker_color');
   
       }
       //select attack_origin, allows only one
@@ -256,46 +245,48 @@ $(document).ready(function (){
         //select your own cities show the adjacent provinces...
         $([up, down, left, right]).click(function(){ 
           counter++;
-          //check for your own land
-          if(this.owner == 'player1'){
+          //check for your own land NEED TO ADD CURRENT PLAYER
+          if(this.owner == leader){
             alert('Sir, that\'s your own province. Are you trying to start a civil war?');
           }
           //EXTRA TIME: right click to get out/unbind,set of selection state...
           //otherwise, paint it red, increase counter, one-time target only.
           else{
             var defender = this;
-            $(this).toggleClass('adjacent_color1');
-            $(this).toggleClass('defender_color2');
-            $([up, down, left, right]).unbind('click');
-            // $('.province').unbind('hover');
+            $(this).toggleClass('adjacent_color');//toggles off the defender cell's adjacent color
+            $(this).toggleClass('defender_color');//toggles on the defender color, red.
+
             //initiates a button for attacking
-            $('#confirm_btn').text('To battle!').show().click(function(){
-              $('.province').unbind('click');
+            $('#confirm_btn').text('Attack!').show().click(function(){
+              // $('.province').unbind('click');
               battle(attacker, defender);
-              //battle button stays if you want to continue attacking...
-              if(attacker.garrison <= 1){ //hide battle button if not enough garrison
-                $(this).hide();
-              }
-              $('.province').unbind('click'); //clears all events from map squares
-              $(defender).toggleClass('adjacent_color1');//clears highlight of attacker cells
-              $(attacker).toggleClass('defender_color2');//clears highlight of adjacent cells
-              console.log('toggled');
-            });
-            //initiates a button for skipping to re-target next attacker and target
-            $('#cancel_btn').text('select different province').show().click(function(){
+
+              //after the battle is over, revert color labeling
+              $('.province').unbind('hover');
+              $(defender).toggleClass('defender_color').toggleClass('adjacent_color');//clears highlight of attacker cells
+              $(attacker).toggleClass('attacker_color');//clears highlight of adjacent cells
+              $([up, down, left, right]).toggleClass('adjacent_color');
+              $([up, down, left, right]).each(function(index, element){
+
+                //empty cells will revert back without labels
+                if(element.owner == "nobody"){
+                  $(element).text('');
+                }
+              });
               $(this).hide();
-              $('#advance_btn').show(); //re-establish advance btn, which runs attack()
 
             });
+            //initiates a button for skipping to re-target next attacker and target
+            $('#advance_btn').text('Invade another province').show();
           }
 
         });
       }
       //if what you click is not your own, and you have selected
-      else if(this.owner != 'player1' && counter < 2){
+      else if(this.owner != leader && counter < 2){
         alert('Pick your own territory to attack from'+counter);
       }
-      else if(this.owner == 'player1' && this.garrison <= 1 && counter < 2){
+      else if(this.owner == leader && this.garrison <= 1 && counter < 2){
         alert('attacking provinces must have more than one troop to launch attacks');
       }
     });
@@ -382,11 +373,11 @@ $(document).ready(function (){
         
         //if indexed attacker roll is less or equal to iteration of defender roll
         if(element >= attacker_rolls[index]){
-          console.log('attacker loses 1');
+          // console.log('attacker loses 1');
           attacker_losses++;
         }
         else if(element < attacker_rolls[index]){
-          console.log('defender loses 1');
+          // console.log('defender loses 1');
           defender_losses++;
         }
 
@@ -398,15 +389,15 @@ $(document).ready(function (){
 
       //for one-on-one dice matchup, 
       if (defender_rolls[0] >= attacker_rolls[0]){
-        console.log('attacker loses 1');
+        // console.log('attacker loses 1');
         attacker_losses++;
       }
       else if(defender_rolls[0] < attacker_rolls[0]){
-        console.log('defender loses 1');
+        // console.log('defender loses 1');
         defender_losses++;
       }
     }
-    // console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
+    console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
     return [attacker_losses, defender_losses];
   }
 
@@ -431,22 +422,20 @@ $(document).ready(function (){
   //determine winner of roll
   function show_winner(){
     if(player1.roll > player2.roll){
-      player1.lead = true;
-      player2.lead = false;
       $('#roll_btn').hide();
       $('#phase_log p').text('Player 1 starts!');
-      $('#advance_btn').show().text('Just give me my troops already');
+      $('#advance_btn').show().text('Place my troops');
+      leader = 'player1';
+      second_player = 'player2';
     }
     else if(player1.roll < player2.roll){
-      player1.lead = false;
-      player2.lead = true;
       $('#roll_btn').hide();
       $('#phase_log p').text('Player 2 starts!');
       $('#advance_btn').show().text('Place your troops');
+      leader = 'player2';
+      second_player = 'player1';
     }
     else if(player1.roll === player2.roll){
-      player1.lead = 'tie';
-      player2.lead = 'tie';
       $('#phase_log em').text('IT\'S A TIE! Roll again!');
     }
 

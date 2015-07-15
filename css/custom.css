@@ -1,6 +1,6 @@
 html, body, section {
     height: 800px;
-    font-family: Arvo;
+    font-family: 'PT Sans', sans-serif;
 }
 h1{
 	font-size: 70px;
@@ -55,9 +55,9 @@ h1{
 	float:right;
 	width:auto;
 	background-color: #2d2d2d;
-	height: auto;
-	overflow: auto;
+	height: 100%;
 	padding: 20px;
+	position: fixed;
 
 }
 
@@ -93,13 +93,14 @@ article{
 	margin: auto;
 }
 
-#test{
+#tooltip{
 	text-align: right;
 	color:white;
 	position: fixed;
 	left:20px;
-	bottom:100px;
-	background-color: rgba(148,9,9,0.6);
+	bottom:50px;
+	font-size: 30px;
+	background-color: rgba(148,9,9,0.8);
 }
 .p1_colors{
 	background-color: rgba(0,15,88,0.5);
@@ -111,10 +112,21 @@ article{
 	background-color: rgba(77,37,4,0.5);
 }
 
-.defender_color2{
-	background-color: rgba(255,0,0,0.7) !important;
+/*red*/
+.defender_color{ 
+	background-color: rgba(255,0,0,0.5) !important;
 }
-.adjacent_color1{
+/*light red*/
+.adjacent_color{
 	background-color: rgba(255,0,0,0.3) !important;
+}
+/*light blue*/
+.attacker_color{
+	background-color: rgba(150,223,229,0.8) !important;
+}
+
+/*hover on attack*/
+.hover_attack{
+	border: orange 5px solid !important;
 }
 
