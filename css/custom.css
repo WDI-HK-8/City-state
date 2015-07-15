@@ -1,0 +1,79 @@
+html, body, section {
+    height: 800px;
+}
+
+/*per cell grid*/
+.row{
+	height: 63px;
+	width: 1000px;
+
+}
+
+.per_cell{
+	height: 63px;
+	border:1px solid darkgrey;
+	text-align: center;
+	z-index: 1000px;
+	left:15px;
+}
+
+.per_cell:hover{
+	background-color: rgba(100,100,100,0.5);
+}
+
+#map,#map_grid{
+	width:1000px;
+	height:770px;
+	position: absolute;
+}
+
+#map{
+	border:brown 2px solid;
+}
+
+/*Sidebar Styling*/
+
+#sidebar{
+	float:right;
+	width:300px;
+	background-color: #2d2d2d;
+}
+
+header{
+	color:crimson;
+	padding:0px 10px;
+}
+
+
+#deploy_ind{
+	color:#fbabab;
+}
+
+article ul{
+	list-style: none;
+	padding:0px;
+}
+
+p small{
+	text-align: center;
+}
+
+#phase_log, #status_log{
+	min-height: 150px;
+	background-color: #f2e9c3;
+	margin: 5px 10px;
+}
+
+article{
+	padding:10px;
+	margin: auto;
+}
+
+#control_box button{
+	padding: 10px;
+	margin: 5px 10px;
+}
+
+#test{
+	color:red;
+}

@@ -1,0 +1,30 @@
+{
+  "name": "city-state",
+  "version": "0.0.0",
+  "homepage": "https://github.com/WDI-HK-8/City-state",
+  "authors": [
+    "jonycfu <jon.yc.fu@gmail.com>"
+  ],
+  "description": "WDI PROJECT #1",
+  "main": "index.html",
+  "keywords": [
+    "risk",
+    "strategy",
+    "game",
+    "conquest",
+    "ancient",
+    "greece"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "bootstrap": "~3.3.5"
+  }
+}
