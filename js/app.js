@@ -16,7 +16,7 @@ $(document).ready(function (){
     [1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],
     [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11] //85 water cells
   ];
-  var up,down,left,right;
+  var up,down,left,right, attackers;
   var x,y,z;
   var phase_counter=0;
   var player1={};
@@ -222,10 +222,12 @@ $(document).ready(function (){
         }
     );    
     $('.province').click(function(){
-      //checks if attack origin is selected, restricted by counter
+      //checks if attack origin is selected, restricted by counter, should run once only
+      
       if(counter < 1 && this.owner == 'player1' && this.garrison > 1){
+        attacker = this; //assigns to global variable
         //one attacker must stay behind
-        var attack_origin = this.garrison-1; 
+        var attack_origin = attacker.garrison-1; 
         counter++;
         $(this).css('border','orange 5px solid');
 
@@ -241,9 +243,11 @@ $(document).ready(function (){
           $(element).css('background-color','rgba(255,0,0,0.3)');
           $(element).html(element.garrison+'<br>'+element.owner);
         });
+        console.log('inside if statement: '+attacker.pos)
       }
       //select attack_origin, allows only one
       else if(counter == 1){ 
+        console.log('inside elseif statement: '+attacker.pos);
         //select your own cities show the adjacent provinces...
         $([up, down, left, right]).click(function(){ 
           counter++;
@@ -254,9 +258,16 @@ $(document).ready(function (){
           //else if() //right click to get out/unbind,set of selection state...
           //otherwise, paint it red, increase counter, one-time target only.
           else{
+            console.log('inside else statement: '+attacker.pos);
+            var defender = this;
             $(this).css('background-color','red');
             $([up, down, left, right]).unbind('click');
-            $('#confirm_btn').text('To battle!').show();
+            $('.province').unbind('hover');
+            //initiates a button with click behavior
+            $('#confirm_btn').text('To battle!').show().click(function(){
+              $('.province').unbind('click');
+              battle(attacker, defender);
+            });
           }
 
         });
@@ -268,10 +279,67 @@ $(document).ready(function (){
       else if(this.owner == 'player1' && this.garrison <= 1 && counter < 2){
         alert('attacking provinces must have more than one troop to launch attacks');
       }
+    });
+  }
+
+  function offense(attacker){
+    //conditions met: attacker.garrison is already greater than 1
+    var attacker_rolls = [];
+    var attacker_avail = attacker.garrison - 1;
+    console.log(attacker_avail);
+    //attacking with 3+ troops
+    if(attacker_avail >= 3){
+      for(i = 0; i < 3; i++){
+        attacker_rolls.push(singleman_diceroll());
+      }
+    }
+    //attacking with under 3 troops
+    else if(attacker_avail < 3){
+      //attacking with 2 troops
+      if(attacker_avail == 2){
+        for(i = 0; i < 2; i++){
+          attacker_rolls.push(singleman_diceroll());
+        }
+      }
+      //attacking with 1 or less troops
+      else if(attacker_avail <=1){
+        for(i = 0; i < 1; i++){
+          attacker_rolls.push(singleman_diceroll());
+        }
+      }
+    }
+    console.log(attacker_rolls.sort().reverse());
+    return attacker_rolls.sort().reverse();
+  }
+
+  function defense(defender){
+      //conditions met: attacker garrison is already greater than 1
+      var defender_rolls = [];
+      //defending with 2+ troops
+      if(defender.garrison >= 2){
+        for(i = 0; i < 2; i++){
+          defender_rolls.push(singleman_diceroll());
+        }
+      }
+      
+      //defending with 1 or less troops
+      else if(defender.garrison <=1){
+        for(i = 0; i < 1; i++){
+          defender_rolls.push(singleman_diceroll());
+        }
+      }
+      return defender_rolls.sort().reverse(); 
+  }
 
 
+  //get greatest pair via one_dicerolls
+  function battle(attacker, defender){
+    var attacker_rolls = offense(attacker); //returns avail_attackers
+    var defender_rolls = defense(defender);
+    console.log('Attacker Rolls: '+attacker_rolls+'Defender Rolls: '+ defender_rolls);
+    //based on defender garrison, compare top corresponding attacker and defender array elements,
+    //yield victor, tally garrison count 
 
-    })
   }
 
 
@@ -289,6 +357,10 @@ $(document).ready(function (){
   function one_diceroll(){
     player1.roll = Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
     player2.roll = Math.ceil(Math.random()*6);
+  }
+  //single-player dice roll
+  function singleman_diceroll(){
+    return Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
   }
 
   //determine winner of roll
