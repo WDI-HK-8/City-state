@@ -118,17 +118,21 @@ $(document).ready(function (){
   function recruit_setup(){
 
     //initialize recruit count
-    player1.recruits = 6;
-    player2.recruits = 6;
-    neutral.recruits = 12;
+    player1.recruits = 4;
+    player2.recruits = 4;
+    neutral.recruits = 8;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
+    reupdate_log();
+    add_troops();
+  }
+
+  function reupdate_log(){
     //re-update the game log on each cell selection... NOTE TO SELF: Refactor this later
     $('#phase_log p').html('Player1 recruits: '+ player1.recruits +
                            '<br>Player2 recruits: '+ player2.recruits +
                            '<br>Neutral recruits: ' + neutral.recruits);
-    add_troops();
   }
 
   //add_troops() handler...NOTE TO SELF: Refactor more with 'this' via fun.bind() to bind to click element
@@ -149,7 +153,7 @@ $(document).ready(function (){
         populate(player1);
         this.owner = 'player1';
         this.garrison++;
-        $(this).css('background-color','rgba(0,15,88,0.5)').html(this.garrison+'<br>'+this.owner);
+        $(this).css('background-color','rgba(0,15,88,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
 
         //set for neutral
         if(player1.recruitcounter >= 2){ //once you deploy twice
@@ -162,7 +166,7 @@ $(document).ready(function (){
         populate(neutral);
         this.owner = 'neutral';
         this.garrison++;
-        $(this).css('background-color','rgba(77,37,4,0.5)').html(this.garrison+'<br>'+this.owner);
+        $(this).css('background-color','rgba(77,37,4,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
         if(neutral.recruitcounter >= 2 && counter == 4){
           player1.recruitcounter = 0;
           counter = 0;
@@ -179,7 +183,7 @@ $(document).ready(function (){
         populate(player2);
         this.owner = 'player2';
         this.garrison++;
-        $(this).css('background-color','rgba(24,79,30,0.5)').html(this.garrison+'<br>'+this.owner);
+        $(this).css('background-color','rgba(24,79,30,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
         
         if(player2.recruitcounter >= 2){
           neutral.recruitcounter = 0;
@@ -201,9 +205,7 @@ $(document).ready(function (){
       }
 
       //update recruit list
-      $('#phase_log p').html('player1 recruits: '+ player1.recruits +
-                             '<br>player2 recruits: '+ player2.recruits +
-                             '<br>neutral recruits: ' + neutral.recruits);
+      reupdate_log();
     });
   }
 
@@ -243,11 +245,10 @@ $(document).ready(function (){
           $(element).css('background-color','rgba(255,0,0,0.3)');
           $(element).html(element.garrison+'<br>'+element.owner);
         });
-        console.log('inside if statement: '+attacker.pos)
+  
       }
       //select attack_origin, allows only one
       else if(counter == 1){ 
-        console.log('inside elseif statement: '+attacker.pos);
         //select your own cities show the adjacent provinces...
         $([up, down, left, right]).click(function(){ 
           counter++;
@@ -255,18 +256,25 @@ $(document).ready(function (){
           if(this.owner == 'player1'){
             alert('Sir, that\'s your own province. Are you trying to start a civil war?');
           }
-          //else if() //right click to get out/unbind,set of selection state...
+          //EXTRA TIME: right click to get out/unbind,set of selection state...
           //otherwise, paint it red, increase counter, one-time target only.
           else{
-            console.log('inside else statement: '+attacker.pos);
             var defender = this;
             $(this).css('background-color','red');
             $([up, down, left, right]).unbind('click');
             $('.province').unbind('hover');
-            //initiates a button with click behavior
+            //initiates a button for attacking
             $('#confirm_btn').text('To battle!').show().click(function(){
               $('.province').unbind('click');
               battle(attacker, defender);
+              $(this).hide();
+              $('.province').unbind('click'); //clears all events from map squares
+              $('.province').css('background-color','transparent'); //clears highlighted map squares
+            });
+            //initiates a button for skipping
+            $('#cancel_btn').text('Skip Attack Phase').show().click(function(){
+              alert('next phase');
+              $(this).hide();
             });
           }
 
@@ -286,7 +294,6 @@ $(document).ready(function (){
     //conditions met: attacker.garrison is already greater than 1
     var attacker_rolls = [];
     var attacker_avail = attacker.garrison - 1;
-    console.log(attacker_avail);
     //attacking with 3+ troops
     if(attacker_avail >= 3){
       for(i = 0; i < 3; i++){
@@ -308,7 +315,6 @@ $(document).ready(function (){
         }
       }
     }
-    console.log(attacker_rolls.sort().reverse());
     return attacker_rolls.sort().reverse();
   }
 
@@ -336,26 +342,61 @@ $(document).ready(function (){
   function battle(attacker, defender){
     var attacker_rolls = offense(attacker); //returns avail_attackers
     var defender_rolls = defense(defender);
-    console.log('Attacker Rolls: '+attacker_rolls+'Defender Rolls: '+ defender_rolls);
+    console.log('Attacker: '+attacker_rolls+' Defender: '+ defender_rolls);
     //based on defender garrison, compare top corresponding attacker and defender array elements,
     //yield victor, tally garrison count 
-    battle_outcome(attacker_rolls, defender_rolls);
-  }
+    var battle_losses = battle_outcome(attacker_rolls, defender_rolls); //index 0 is attacker losses; index 1 is defender losses;
+    attacker.garrison -= battle_losses[0];
+    defender.garrison -= battle_losses[1];
 
+    console.log('attacker has '+ attacker.garrison+ ' remaining');
+    console.log('defender has '+ defender.garrison+ ' remaining');
+    //update log of province cells upon each battle
+    $(attacker).html(attacker.garrison+'<br><small>'+attacker.owner+'</small>');
+    $(defender).html(defender.garrison+'<br><small>'+defender.owner+'</small>');
+  }
+  //allow to keep attacking or skip
 
   //---------dice-roll-calculation------------
   //compute winner for battle function
   function battle_outcome(attacker_rolls, defender_rolls){
-    //for defender rolls equal or gr than 2
+    var attacker_losses = 0;
+    var defender_losses = 0;
+    //for defender has 2 dices
     if(defender_rolls.length >= 2){
       //mutate attacker rolls to match 2 (don't worry, it is sorted)
       attacker_rolls.length = 2;
 
-      for() 
+      defender_rolls.forEach(function(element, index){
+        
+        //if indexed attacker roll is less or equal to iteration of defender roll
+        if(element >= attacker_rolls[index]){
+          console.log('attacker loses 1');
+          attacker_losses++;
+        }
+        else if(element < attacker_rolls[index]){
+          console.log('defender loses 1');
+          defender_losses++;
+        }
+
+      });
     }
+    //for defender has only one dice 
     else if(defender_rolls.length == 1){
       attacker_rolls.length = 1;
+
+      //for one-on-one dice matchup, 
+      if (defender_rolls[0] >= attacker_rolls[0]){
+        console.log('attacker loses 1');
+        attacker_losses++;
+      }
+      else if(defender_rolls[0] < attacker_rolls[0]){
+        console.log('defender loses 1');
+        defender_losses++;
+      }
     }
+    // console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
+    return [attacker_losses, defender_losses];
   }
 
   //a random dice roll
