@@ -76,8 +76,7 @@ $(document).ready(function (){
   //Initialize movement range with move_range function
   function mvrange_map(){
     $('.province').each(function(){
-      var mvrange = move_range(this.pos); 
-      this.mvrange = mvrange;
+      this.mvrange = move_range(this.pos); 
     });
   }
 
@@ -153,7 +152,8 @@ $(document).ready(function (){
         populate(player1);
         this.owner = 'player1';
         this.garrison++;
-        $(this).css('background-color','rgba(0,15,88,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
+        //player color
+        $(this).toggleClass('p1_colors').css('background-color', 'rgba(0,15,88,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
 
         //set for neutral
         if(player1.recruitcounter >= 2){ //once you deploy twice
@@ -166,7 +166,8 @@ $(document).ready(function (){
         populate(neutral);
         this.owner = 'neutral';
         this.garrison++;
-        $(this).css('background-color','rgba(77,37,4,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
+        //player color
+        $(this).toggleClass('neut_colors').css('background-color', 'rgba(77,37,4,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
         if(neutral.recruitcounter >= 2 && counter == 4){
           player1.recruitcounter = 0;
           counter = 0;
@@ -183,7 +184,8 @@ $(document).ready(function (){
         populate(player2);
         this.owner = 'player2';
         this.garrison++;
-        $(this).css('background-color','rgba(24,79,30,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
+        //player color
+        $(this).toggleClass('.p2_colors').css('background-color', 'rgba(24,79,30,0.5)').html(this.garrison+'<br><small>'+this.owner+'</small>');
         
         if(player2.recruitcounter >= 2){
           neutral.recruitcounter = 0;
@@ -196,8 +198,9 @@ $(document).ready(function (){
         $('#sidebar').css('background-color','#2d2d2d');
         $('.province').unbind();
         $('#test').hide();
-        $('#advance_btn').text('Start Play').show();
         alert('You are ready to begin your turn.');
+        $('#advance_btn').text('Launch attack').show();
+        $('#cancel_btn').text('Next Phase').show();
       }
       //catch over clicking someone else's marked province
       else{
@@ -242,7 +245,8 @@ $(document).ready(function (){
         left = $('.province')[attack_range[2][0]]; 
         right = $('.province')[attack_range[3][0]];
         $([up,down,left,right]).each(function(index, element){
-          $(element).css('background-color','rgba(255,0,0,0.3)');
+          $(element).css('background-color','invisible');
+          $(element).toggleClass('adjacent_color1');
           $(element).html(element.garrison+'<br>'+element.owner);
         });
   
@@ -260,21 +264,28 @@ $(document).ready(function (){
           //otherwise, paint it red, increase counter, one-time target only.
           else{
             var defender = this;
-            $(this).css('background-color','red');
+            $(this).toggleClass('adjacent_color1');
+            $(this).toggleClass('defender_color2');
             $([up, down, left, right]).unbind('click');
-            $('.province').unbind('hover');
+            // $('.province').unbind('hover');
             //initiates a button for attacking
             $('#confirm_btn').text('To battle!').show().click(function(){
               $('.province').unbind('click');
               battle(attacker, defender);
-              $(this).hide();
+              //battle button stays if you want to continue attacking...
+              if(attacker.garrison <= 1){ //hide battle button if not enough garrison
+                $(this).hide();
+              }
               $('.province').unbind('click'); //clears all events from map squares
-              $('.province').css('background-color','transparent'); //clears highlighted map squares
+              $(defender).toggleClass('adjacent_color1');//clears highlight of attacker cells
+              $(attacker).toggleClass('defender_color2');//clears highlight of adjacent cells
+              console.log('toggled');
             });
-            //initiates a button for skipping
-            $('#cancel_btn').text('Skip Attack Phase').show().click(function(){
-              alert('next phase');
+            //initiates a button for skipping to re-target next attacker and target
+            $('#cancel_btn').text('select different province').show().click(function(){
               $(this).hide();
+              $('#advance_btn').show(); //re-establish advance btn, which runs attack()
+
             });
           }
 

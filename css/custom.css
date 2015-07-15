@@ -55,6 +55,9 @@ h1{
 	float:right;
 	width:auto;
 	background-color: #2d2d2d;
+	height: auto;
+	overflow: auto;
+	padding: 20px;
 
 }
 
@@ -85,7 +88,7 @@ article{
 }
 
 #control_box button{
-	padding: 45px;
+	padding: 35px;
 	font-size: 25px;
 	margin: auto;
 }
@@ -96,5 +99,22 @@ article{
 	position: fixed;
 	left:20px;
 	bottom:100px;
-	background-color: rgba(148,9,9,0.6) ;
+	background-color: rgba(148,9,9,0.6);
 }
+.p1_colors{
+	background-color: rgba(0,15,88,0.5);
+}
+.p2_colors{
+	background-color: rgba(24,79,30,0.5);
+}
+.neut_colors{
+	background-color: rgba(77,37,4,0.5);
+}
+
+.defender_color2{
+	background-color: rgba(255,0,0,0.7) !important;
+}
+.adjacent_color1{
+	background-color: rgba(255,0,0,0.3) !important;
+}
+
