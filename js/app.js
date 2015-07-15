@@ -339,12 +339,25 @@ $(document).ready(function (){
     console.log('Attacker Rolls: '+attacker_rolls+'Defender Rolls: '+ defender_rolls);
     //based on defender garrison, compare top corresponding attacker and defender array elements,
     //yield victor, tally garrison count 
-
+    battle_outcome(attacker_rolls, defender_rolls);
   }
 
 
   //---------dice-roll-calculation------------
-  
+  //compute winner for battle function
+  function battle_outcome(attacker_rolls, defender_rolls){
+    //for defender rolls equal or gr than 2
+    if(defender_rolls.length >= 2){
+      //mutate attacker rolls to match 2 (don't worry, it is sorted)
+      attacker_rolls.length = 2;
+
+      for() 
+    }
+    else if(defender_rolls.length == 1){
+      attacker_rolls.length = 1;
+    }
+  }
+
   //a random dice roll
   function one_diceroll(){
     player1.roll = Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
