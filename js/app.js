@@ -56,7 +56,7 @@ $(document).ready(function (){
     //initialize phase button for entering a new phase
     $('#advance_btn').click(function(){
       phase_counter++;
-      console.log(phase_counter);
+      // console.log(phase_counter);
       //checks only sets recruit setup once, after second-time clicked
       if(phase_counter==1){//run recruit setup
         recruit_setup(); 
@@ -121,9 +121,9 @@ $(document).ready(function (){
   function recruit_setup(){
 
     //initialize recruit count
-    player1.recruits = 4;
-    player2.recruits = 4;
-    neutral.recruits = 8;
+    player1.recruits = 8;
+    player2.recruits = 8;
+    neutral.recruits = 16;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
@@ -170,7 +170,7 @@ $(document).ready(function (){
         this.owner = leader;
         this.garrison++;
         //player color
-        $(this).addClass('p1_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner+'');
+        $(this).addClass('p1_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner);
 
         //set for neutral
         $('#recruit_sound').trigger('play');
@@ -187,7 +187,7 @@ $(document).ready(function (){
         this.owner = 'neutral';
         this.garrison++;
         //player color
-        $(this).addClass('neut_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner+'');
+        $(this).addClass('neut_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner);
         
         if(neutral.recruitcounter >= 2 && counter == 4){
           $('#recruit_sound').trigger('play');
@@ -213,7 +213,7 @@ $(document).ready(function (){
         this.owner = second_player;
         this.garrison++;
         //player color
-        $(this).addClass('p2_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner+'');
+        $(this).addClass('p2_colors').html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner);
         
         if(player2.recruitcounter >= 2){
           $('#recruit_sound').trigger('play');
@@ -304,7 +304,7 @@ $(document).ready(function (){
               $([up, down, left, right]).each(function(index, element){
                 
                 $(element).toggleClass('adjacent_color');
-                console.log('toggle adjacent color');
+                // console.log('toggle adjacent color');
                 
                 //empty cells will revert back without labels
                 if(element.owner == "nobody"){
@@ -393,8 +393,8 @@ $(document).ready(function (){
     $('#phase_log p').html('Attacker has '+ attacker.garrison+ ' remaining<br> Defender has '+ defender.garrison+ ' remaining');  
 
     //update log of province cells upon each battle
-    $(attacker).html(''+attacker.garrison+'<br>'+attacker.owner+'');
-    $(defender).html(''+defender.garrison+'<br>'+defender.owner+'');
+    $(attacker).html(attacker.garrison+'<br>'+attacker.owner);
+    $(defender).html(defender.garrison+'<br>'+defender.owner);
     $('#battle_effect1').trigger('play');
     //display animate battle losses per province
     if(battle_losses[0] > 0){
@@ -412,17 +412,25 @@ $(document).ready(function (){
       $('.battle_tally').animate({ "bottom": "+=50px" }, "slow" ).fadeIn(1200,function(){
         $(this).fadeOut(1200,function(){
           
-        });
-      }).show();
+        });//toggle off the battle_tally class
+      }).show().removed;
     }
-    //take over defender cell with all but one troop if defender garrison is zero
-    if(defender.garrison <= 0){
-      defender.owner = attacker.owner;
-      //toggle attacker's classes for proper labeling
-      defender.toggleClass('p1_colors');
-      defender.garrison = attacker.garrison - 1; 
+    //check if you defeated all defenders on a province, then capture it
+    if(defender.garrison == 0){
+      capture_province(attacker, defender);    
     }
     
+  }
+
+  function capture_province(attacker, defender){
+    //take over defender cell with all but one troop if defender garrison is zero only (watch for bugs)
+      //Set new owner of province
+      defender.owner = attacker.owner;
+      defender.garrison = attacker.garrison - 1; 
+      //toggle province's new labeling and styles, while removing old ones 
+      $('defender').toggleClass('[class*="color"]').toggleClass('.p1_colors').html('<span class="garrison_color">'+defender.garrison+'</span><br>'+defender.owner);;
+      console.log('the defender object is toggled with p1 class');
+      //move all but one of the garrison to the defender's garrison, if the garrison isn't bugged at negative value
   }
 
 
@@ -464,7 +472,7 @@ $(document).ready(function (){
         defender_losses++;
       }
     }
-    console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
+    // console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
     return [attacker_losses, defender_losses];
   }
 
