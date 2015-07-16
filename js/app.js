@@ -50,7 +50,7 @@ $(document).ready(function(){
       }  
   	});
     //initialize properties of each grid cell
-    map_grid = $('.province');
+    map_grid = $('.province').slice(12);
     map_grid.each(function(index, element){
       this.pos = [index, $(element).parent().index()]; // [x,y] coords
       this.owner = 'nobody'; //territory owner
@@ -113,17 +113,21 @@ $(document).ready(function(){
     map_grid.each(function(){
       this.mvrange = move_range(this.pos); //[[x*,y],[x*,y],[x*,y],[x*,y]]
       var range = this.mvrange;
-      for(i = 0; i < range.length-1; i++){ //[x*,y],[x*,y],[x*,y],[x*,y]
+      for(i = 0; i < range.length; i++){ //[x*,y],[x*,y],[x*,y],[x*,y]
 
         switch (i){ //switch case for index and up,down,left,right DOM objects
           case 0:
             this.upper = range[i][0];
+            break;
           case 1:
             this.downer = range[i][0];
+            break;
           case 2:
             this.lefter = range[i][0];
+            break;
           case 3:
             this.righter = range[i][0];
+            break;
         }          
       } 
     });
@@ -144,9 +148,9 @@ $(document).ready(function(){
   function recruit_setup(){
 
     //initialize recruit count. Add in choice for the beginning...
-    player1.recruits = 8;
-    player2.recruits = 8;
-    neutral.recruits = 16;
+    player1.recruits = 2;
+    player2.recruits = 2;
+    neutral.recruits = 4;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
@@ -173,7 +177,6 @@ $(document).ready(function(){
     $('#phase_log em').hide();
     $('#sidebar').css('background-color','rgba(17,63,99,1)'); //player1 color cue
     map_grid.click(function(){
-      console.log(this.upper);
              
       //when player1's player2's, and neutral's recruits reach zero...
       if(player1.recruits <= 0 && neutral.recruits <=0 && player2.recruits <=0){
@@ -266,7 +269,6 @@ $(document).ready(function(){
 
     map_grid.hover(function(){
       $( this ).toggleClass( "hover_attack" );
-      console.log(this.upper);
     });
 
     map_grid.click(function(){
@@ -280,20 +282,15 @@ $(document).ready(function(){
         counter++;
 
         //toggles attack range color
-        $(this.mvrange).each(function(index, element){ //APPLY this.mvrange through an iterator function that convert its array form into four JQuery objects
-          $(element).toggleClass('adjacent_color');
-          $(element).css('font-size','15px');
-          $(element).html(element.garrison+'<br>'+element.owner);
-        });
+        toggle_adjacent(this);
         //highlight attacker province
         $(attacker).toggleClass('attacker_color');
-  
       }
       //select attack target
       else if(counter == 1){ 
         $('#tooltip').html(leader+'\'s attack. Click again to target');
         //select your own cities show the adjacent provinces...
-        $(this.mvrange).click(function(){ 
+        $([map_grid[this.upper], map_grid[this.lower], map_grid[this.lefter], map_grid[this.righter]]).click(function(){ 
           counter++;
           //check for your own land NEED TO ADD CURRENT PLAYER
           if(this.owner == leader){
@@ -343,6 +340,14 @@ $(document).ready(function(){
         alert('attacking provinces must have more than one troop to launch attacks');
       }
     });
+  }
+
+  function toggle_adjacent(this_obj){//just plug "this" into the arg
+    var adjacent_indices = [this_obj.upper, this_obj.downer, this_obj.lefter, this_obj.righter];
+    for(i = 0; i < adjacent_indices.length;i++){
+      $(map_grid[adjacent_indices[i]]).toggleClass('adjacent_color');
+      $(map_grid[adjacent_indices[i]]).html(this_obj.garrison+'<br>'+this_obj.owner);
+    }
   }
 
   function offense(attacker){
