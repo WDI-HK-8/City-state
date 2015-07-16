@@ -13,7 +13,6 @@
 		<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
 		<!-- LIBRARIES -->
-		<!-- <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'> -->
 		<script src="bower_components/jquery/dist/jquery.min.js"></script>
 		<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 		<script src="bower_components/jquery.splitter/js/jquery.splitter-0.15.0.js"></script>
@@ -29,18 +28,7 @@
 			<img id="map" src="assets/img/map.jpg">
 		</section>
 		<section id="sidebar" class="col-xs-4">
-			<audio id="battle_effect1" preload="none"> 
-			   <source src="assets/audio/attack_sound.mp3" type="audio/mpeg">
-			</audio>
-			<audio id="dice_roll_sound" preload="none"> 
-			   <source src="assets/audio/dice_roll.mp3" type="audio/mpeg">
-			</audio>
-			<audio id="deploy_sound" preload="none"> 
-			   <source src="assets/audio/deploy.mp3" type="audio/mpeg">
-			</audio>
-			<audio id="recruit_sound" preload="none"> 
-			   <source src="assets/audio/recruit_troop.mp3" type="audio/mpeg">
-			</audio>
+		
 
 			<div id="sidebar_wrapper">
 				<header>
@@ -48,12 +36,8 @@
 					<h3>Game Info</h3>
 				</header>
 				<article id="status_log">
-					<ul>
-					    <li></li>
-					    <li></li>
-					    <li></li>
-					    <li></li>
-					</ul>
+					
+				<br><em>“No man or woman born, coward or brave, can shun his destiny.”</em><br><br>― Homer, The Iliad
 				</article>
 				<header>
 					<h3>
@@ -79,5 +63,22 @@
 				<article id="turn_reminder"></article>	
 			</section>
 		</div>
+
+		<!-- AUDIO FILES -->
+		<audio id="battle_effect1" preload="none"> 
+		   <source src="assets/audio/attack_sound.mp3" type="audio/mpeg">
+		</audio>
+		<audio id="dice_roll_sound" preload="none"> 
+		   <source src="assets/audio/dice_roll.mp3" type="audio/mpeg">
+		</audio>
+		<audio id="deploy_sound" preload="none"> 
+		   <source src="assets/audio/deploy.mp3" type="audio/mpeg">
+		</audio>
+		<audio id="recruit_sound" preload="none"> 
+		   <source src="assets/audio/recruit_troop.mp3" type="audio/mpeg">
+		</audio>
+		<audio id="ready_sound" preload="none"> 
+		   <source src="assets/audio/battle_ready.mp3" type="audio/mpeg">
+		</audio>
 	</body>	
 </html>

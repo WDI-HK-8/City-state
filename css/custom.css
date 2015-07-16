@@ -3,6 +3,7 @@
 html, body, section {
 	font-family: 'Cinzel', serif;
   height: 800px;
+  background-color: #2d2d2d;
 }
 div.vsplitter{
 	background-color:rgba(0,0,0,0.1);
@@ -16,6 +17,7 @@ h1{
 h3{
 	color:white;
 	font-size: 20px;
+
 }
 
 /*per cell grid*/
@@ -82,7 +84,9 @@ p small{
 }
 
 #status_log{
+	padding: 10px 20px;
 	background-color: #b0d5db;
+	margin-bottom: 50px;
 }
 
 article{

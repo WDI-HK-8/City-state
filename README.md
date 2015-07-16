@@ -1,9 +1,14 @@
 City-state Rules for (2-players) 
 *Based on Hasbro's Risk strategy game*
 
-#Installation
+#Setup
 
-	1) More on this later...
+	
+	1. Make sure you have bower installed. To do that, open your terminal. See link (http://bower.io/#getting-started) for the walkthrough
+
+	2. Once you are done installing bower, you can type the following in the terminal to get the dependencies for the game. 
+
+	~~*bower install git@github.com:WDI-HK-8/City-state.git~~
 
 #How to Play: 
 	1) Setup
@@ -11,7 +16,7 @@ City-state Rules for (2-players)
 	3) Battle Mechanics
 	4) Victory Conditions
 
-##Setup:
+##Game Setup:
 	I. Start screen displays message prompt about the game's premise. Select start button. Map displays when loaded.
 
 	II. When map loads, the map is divided into a grid of columns and rows, where the map will be randomly but evenly populated with one troop per location for player one, player two, or neutral. So if there were 45 cells in the grid, each would occupy 15 cells, randomly. 
@@ -20,7 +25,7 @@ City-state Rules for (2-players)
 
 ##Playing the Game: Turn-based Mechanics 
 
-	I. DEPLOY PHASE: In this phase, players count the territories they own and divide it by three (rounded down). So if a player owns 13 cells, he/she gets 4 recruits. That is the amount of recruits you get at the beginning of each turn. Proceed to place your units in your domain territory. Select 'next phase' to advance to attack phase.
+	I. DEPLOY PHASE: In this phase, players count the territories they own and divide it by three (rounded down). So if a player owns 13 cells, he/she gets 4 recruits (rounded down). That is the amount of recruits you get at the beginning of each turn. Proceed to place your units in your domain territory. Select 'next phase' to advance to attack phase.
 
 	II. ATTACK PHASE: To make an attack, player first selects one of his/her domain province as the attacker. Note that attackers can only attack provinces that are up-down-left-right adjacent (or otherwise indicated with routes shown by the mouse hover highlights). The player can then select the target to attack, within its range. Players can check the color of the side panel to see which phase he/she is currently in, along with other map information. You cannot move troops during the attack phase. However when attackers successfully invade a province, you must move as many troops as the dice you throw. Select 'next phase' to advance to fortify phase.
 
