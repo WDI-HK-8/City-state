@@ -253,7 +253,8 @@ $(document).ready(function(){
   }
 
   //choosing attack_origin and attack_tgt
-  function attack(){
+  function attack(){ //unbound map_grid before each run
+
     //initial message instructions
     $('#phase_log p').html('It\'s '+leader+'\'s time to attack');
     $('#tooltip').html(leader+'\'s attack. First select your attacking province.');
@@ -280,10 +281,11 @@ $(document).ready(function(){
 
       }
       //select attack target only if it has an adjacent color class
-      else if(counter == 1 && $(this).hasClass('adjacent_color')){ 
+      else if(counter >= 1 && $(this).hasClass('adjacent_color')){ 
           counter++;
           //CHANGE LEADER TO CURRENT PLAYER
-          if(this.owner == leader){alert('But milord/milady, that\'s your own province. Are you trying to start a civil war?');
+          if(this.owner == leader){
+            alert('But milord/milady, that\'s your own province. Are you trying to start a civil war?');
           }
           //otherwise, paint it red, one-time target only. //EXTRA TIME: right click to get out/unbind,set of selection state...
           else{
@@ -296,7 +298,7 @@ $(document).ready(function(){
               toggle_adjacent(attacker); //REMOVE ADJACENT
               events_reset(attacker, defender);
               $('#attack_btn').show();
-              $(this).hide();//hides confirm button when clicked
+              $(this).unbind().hide();//hides and unbinds the confirm button when clicked**
 
             });
           }
@@ -315,7 +317,7 @@ $(document).ready(function(){
     //ends click selections on map or warnings
     $("map_grid, attacker, defender").unbind();
     $(defender).toggleClass('defender_color adjacent_color');//clears highlight of attacker cells
-    $(attacker).toggleClass('attacker_color').css('border','none');//clears highlight of adjacent cells
+    $(attacker).toggleClass('attacker_color');//clears highlight of adjacent cells
   }
 
   function toggle_adjacent(this_obj){//just plug "this" into the arg and it will toggle adjacent
@@ -331,6 +333,7 @@ $(document).ready(function(){
   }
 
   function offense(attacker){
+    console.log('offense function has run.');
     //conditions met: attacker.garrison is already greater than 1
     var attacker_rolls = [];
     var attacker_avail = attacker.garrison - 1;
@@ -359,29 +362,31 @@ $(document).ready(function(){
   }
 
   function defense(defender){
-      //conditions met: attacker garrison is already greater than 1
-      var defender_rolls = [];
-      //defending with 2+ troops
-      if(defender.garrison >= 2){
-        for(i = 0; i < 2; i++){
-          defender_rolls.push(singleman_diceroll());
-        }
+    console.log('defense function has run.');
+    //conditions met: attacker garrison is already greater than 1
+    var defender_rolls = [];
+    //defending with 2+ troops
+    if(defender.garrison >= 2){
+      for(i = 0; i < 2; i++){
+        defender_rolls.push(singleman_diceroll());
       }
-      
-      //defending with 1 or less troops
-      else if(defender.garrison <=1){
-        for(i = 0; i < 1; i++){
-          defender_rolls.push(singleman_diceroll());
-        }
+    }
+    
+    //defending with 1 or less troops
+    else if(defender.garrison <=1){
+      for(i = 0; i < 1; i++){
+        defender_rolls.push(singleman_diceroll());
       }
-      return defender_rolls.sort().reverse(); 
+    }
+    return defender_rolls.sort().reverse(); 
   }
 
 
   //get greatest pair via one_dicerolls
   function battle(attacker, defender){
-    var attacker_rolls = offense(attacker); //returns avail_attackers
-    var defender_rolls = defense(defender); //LOOP BUG
+    console.log('battle function has run.');
+    var attacker_rolls = offense(attacker); 
+    var defender_rolls = defense(defender); 
     $('#status_log').html('Attacker rolls: '+attacker_rolls+'<br> Defender rolls: '+ defender_rolls);
     //based on defender garrison, compare top corresponding attacker and defender array elements,
     //yield victor, tally garrison count 
@@ -434,6 +439,7 @@ $(document).ready(function(){
   //---------dice-roll-calculation------------
   //compute winner for battle function
   function battle_outcome(attacker_rolls, defender_rolls){
+    console.log('battle_outcome has run.');
     var attacker_losses = 0;
     var defender_losses = 0;
     //for defender has 2 dices
