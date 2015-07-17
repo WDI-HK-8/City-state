@@ -1,4 +1,7 @@
-@import url(http://fonts.googleapis.com/css?family=Cinzel);
+@font-face{
+	font-family: "Cinzel";
+	src: url(../assets/fonts/Cinzel-Regular.ttf) format('truetype');
+}
 
 html, body, section {
 	font-family: 'Cinzel', serif;
@@ -50,10 +53,11 @@ h3{
 
 /*Sidebar Styling*/
 
-#sidebar{
+section #sidebar{
 	background-color: #2d2d2d;
 	padding: 20px;
 	margin-left: 40px;
+	min-height:768px;
 }
 #sidebar_wrapper{
 	padding-left: 40px;

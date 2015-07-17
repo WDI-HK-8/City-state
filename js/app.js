@@ -263,73 +263,59 @@ $(document).ready(function(){
     //initial message instructions
     $('#phase_log p').html('It\'s '+leader+'\'s time to attack');
     $('#tooltip').html(leader+'\'s attack. First select your attacking province.');
-    
-    // console.log('attack function called');
+  
     counter = 0; //reset counter
 
-    map_grid.hover(function(){
-      $( this ).toggleClass( "hover_attack" );
-    });
-
+    map_grid.hover(function(){$( this ).toggleClass( "hover_attack" ); });
     map_grid.click(function(){
 
       //checks if attack origin selected is owned by you and has garrison greater than 1
       if(counter < 1 && this.owner == leader && this.garrison > 1){
-        attacker = this; //assigns to global variable
-        //one attacker must stay behind
-        $('#phase_log p').html("You have selected <span id=\"player1_roll\">"+this.owner+'\'s</span>'+ ' province:'+'<br><br>It has '+this.garrison+ ' troops garrisoned'+'<br><br>This city has no harbor to attack over water.');
-        var attack_origin = attacker.garrison-1; 
-        counter++;
+        attacker = this; //assigns to global attacker
 
-        //toggles attack range color
-        toggle_adjacent(this);
         //highlight attacker province
         $(attacker).toggleClass('attacker_color');
-      }
-      //select attack target
-      else if(counter == 1){ 
+        //toggles attack range color
+        toggle_adjacent(this);
+
+        //one attacker must stay behind
+        $('#phase_log p').html("You have selected <span id=\"player1_roll\">"+this.owner+'\'s</span>'+ ' province:'+'<br><br>It has '+this.garrison+ ' troops garrisoned'+'<br><br>This city has no harbor to attack over water.');
         $('#tooltip').html(leader+'\'s attack. Click again to target');
+        counter++;
+
+      }
+      //select attack target only if it has an adjacent color
+      else if(counter == 1 && $(this).hasClass('adjacent_color')){ 
         //select your own cities show the adjacent provinces...
-        $([map_grid[this.upper], map_grid[this.lower], map_grid[this.lefter], map_grid[this.righter]]).click(function(){ 
+        $(this).click(function(){ 
           counter++;
-          //check for your own land NEED TO ADD CURRENT PLAYER
+          //check for your own land CHANGE LEADER TO CURRENT PLAYER
           if(this.owner == leader){
-            alert('Sir, that\'s your own province. Are you trying to start a civil war?');
+            alert('But milord/milady, that\'s your own province. Are you trying to start a civil war?');
           }
           //EXTRA TIME: right click to get out/unbind,set of selection state...
           //otherwise, paint it red, increase counter, one-time target only.
           else{
             var defender = this;
             $(this).toggleClass('adjacent_color');//toggles off the defender cell's adjacent color
-            $(this).toggleClass('defender_color');//toggles on the defender color, red.
+            $(this).toggleClass('defender_color');//toggles on the defender marker, red.
             $('#phase_log p').html('You are about to attack '+ defender.owner+ '\'s province<br><br> Its has '+ defender.garrison+ ' defending troops<br><br> Attack?');  
 
             //initiates a button for attacking
             $('#confirm_btn').text('Confirm attack').show().click(function(){
               battle(attacker, defender);
+              toggle_adjacent(attacker); //should turn off the adjacent tiles, leaving names still on...
 
-              //after the battle is over, revert color labeling
-              map_grid.unbind('click');//ends blick mouse event after attacking
-              map_grid.unbind('mouseenter mouseleave');
+              //ends click selections on map or warnings
+              map_grid.unbind('click mouseenter mouseleave');
               $(defender).toggleClass('defender_color').toggleClass('adjacent_color');//clears highlight of attacker cells
               $(attacker).toggleClass('attacker_color');//clears highlight of adjacent cells
-
               $(attacker).css('border','none');
-              $(this).each(function(index, element){ //should refer to the caller of click in line 273
-                $(element).toggleClass('adjacent_color');
-                
-                //empty cells will revert back to blank
-                if(element.owner == "nobody"){
-                  $(element).text('');
-                }
-
-              });
               $(this).hide();//hides confirm button when clicked
             });
-            //initiates a button for skipping to re-target next attacker and target
+            //initiates button for skipping to re-target next attacker and target
             $('#attack_btn').text('Invade another province').show();
           }
-
         });
       }
       //if what you click is not your own, and you have selected
@@ -342,11 +328,15 @@ $(document).ready(function(){
     });
   }
 
-  function toggle_adjacent(this_obj){//just plug "this" into the arg
+  function toggle_adjacent(this_obj){//just plug "this" into the arg and it will toggle adjacent
     var adjacent_indices = [this_obj.upper, this_obj.downer, this_obj.lefter, this_obj.righter];
     for(i = 0; i < adjacent_indices.length;i++){
       $(map_grid[adjacent_indices[i]]).toggleClass('adjacent_color');
-      $(map_grid[adjacent_indices[i]]).html(this_obj.garrison+'<br>'+this_obj.owner);
+      $(map_grid[adjacent_indices[i]]).html(map_grid[adjacent_indices[i]].garrison+'<br>'+map_grid[adjacent_indices[i]].owner);
+      //empty cells will revert back to blank
+      if(counter > 1 && map_grid[adjacent_indices[i]].owner == 'nobody'){
+        $(map_grid[adjacent_indices[i]]).text('');
+      }
     }
   }
 
@@ -441,15 +431,12 @@ $(document).ready(function(){
     
   }
 
+  //take over defender cell with all but one troop if defender garrison is zero only (watch for bugs)        
   function capture_province(attacker, defender){
-    //take over defender cell with all but one troop if defender garrison is zero only (watch for bugs)
-      //Set new owner of province
-      defender.owner = attacker.owner;
+      defender.owner = attacker.owner; //Set new owner of province
       defender.garrison = attacker.garrison - 1; 
       //toggle province's new labeling and styles, while removing old ones 
       $('defender').toggleClass('[class*="color"]').toggleClass('.p1_colors').html('<span class="garrison_color">'+defender.garrison+'</span><br>'+defender.owner);;
-      console.log('the defender object is toggled with p1 class');
-      //move all but one of the garrison to the defender's garrison, if the garrison isn't bugged at negative value
   }
 
 
