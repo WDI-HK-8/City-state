@@ -294,12 +294,11 @@ $(document).ready(function(){
             $('#phase_log p').html('You are about to attack '+ defender.owner+ '\'s province<br><br> Its has '+ defender.garrison+ ' defending troops<br><br> Attack?');  
 
             $('#confirm_btn').text('Confirm attack').show().click(function(){
-              battle(attacker, defender); //ITERATION BUG 
-              toggle_adjacent(attacker); //REMOVE ADJACENT
+              battle(attacker, defender); 
+              toggle_adjacent(attacker); 
               events_reset(attacker, defender);
               $('#attack_btn').show();
-              $(this).unbind().hide();//hides and unbinds the confirm button when clicked**
-
+              $(this).unbind().hide();//hides and unbinds the confirm button when clicked
             });
           }
       }
@@ -332,27 +331,22 @@ $(document).ready(function(){
     }
   }
 
-  function offense(attacker){
-    console.log('offense function has run.');
-    //conditions met: attacker.garrison is already greater than 1
+  function offense(attacker){ //conditions met: attacker.garrison is already greater than 1
     var attacker_rolls = [];
     var attacker_avail = attacker.garrison - 1;
-    //attacking with 3+ troops
-    if(attacker_avail >= 3){
+    if(attacker_avail >= 3){//attacking with 3+ troops
       for(i = 0; i < 3; i++){
         attacker_rolls.push(singleman_diceroll());
       }
-    }
-    //attacking with under 3 troops
-    else if(attacker_avail < 3){
+    }    
+    else if(attacker_avail < 3){//attacking with under 3 troops
       //attacking with 2 troops
       if(attacker_avail == 2){
         for(i = 0; i < 2; i++){
           attacker_rolls.push(singleman_diceroll());
         }
-      }
-      //attacking with 1 or less troops
-      else if(attacker_avail <=1){
+      }      
+      else if(attacker_avail <=1){//attacking with 1 or less troops
         for(i = 0; i < 1; i++){
           attacker_rolls.push(singleman_diceroll());
         }
@@ -361,17 +355,13 @@ $(document).ready(function(){
     return attacker_rolls.sort().reverse();
   }
 
-  function defense(defender){
-    console.log('defense function has run.');
-    //conditions met: attacker garrison is already greater than 1
-    var defender_rolls = [];
-    //defending with 2+ troops
-    if(defender.garrison >= 2){
+  function defense(defender){    //conditions met: attacker garrison is already greater than 1
+    var defender_rolls = [];   
+    if(defender.garrison >= 2){//defending with 2+ troops
       for(i = 0; i < 2; i++){
         defender_rolls.push(singleman_diceroll());
       }
-    }
-    
+    }    
     //defending with 1 or less troops
     else if(defender.garrison <=1){
       for(i = 0; i < 1; i++){
@@ -384,7 +374,6 @@ $(document).ready(function(){
 
   //get greatest pair via one_dicerolls
   function battle(attacker, defender){
-    console.log('battle function has run.');
     var attacker_rolls = offense(attacker); 
     var defender_rolls = defense(defender); 
     $('#status_log').html('Attacker rolls: '+attacker_rolls+'<br> Defender rolls: '+ defender_rolls);
@@ -402,16 +391,16 @@ $(document).ready(function(){
     $('#battle_effect1').trigger('play');
     //display animate battle losses per province
     if(battle_losses[0] > 0){
-      $(attacker).append('<br><sub class="battle_tally">-'+battle_losses[0]+'</sub>');
+      $(attacker).append('<br><span class="battle_tally">-'+battle_losses[0]+'</span>');
       $('.battle_tally').hide();
-      $('.battle_tally').animate({ "bottom": "+=10px" }, "slow" ).fadeIn(1200,function(){
+      $('.battle_tally').animate({ "bottom": "+=10px" }, "slow" ).fadeIn(800,function(){
         $(this).fadeOut(1200);
       }).show();
     }
     if(battle_losses[1] > 0){
-      $(defender).append('<br><sub class="battle_tally">-'+battle_losses[1]+'</sub>');
+      $(defender).append('<br><span class="battle_tally">-'+battle_losses[1]+'</span>');
       $('.battle_tally').hide();
-      $('.battle_tally').animate({ "bottom": "+=50px" }, "slow" ).fadeIn(1200,function(){
+      $('.battle_tally').animate({ "bottom": "+=50px" }, "slow" ).fadeIn(800,function(){
         $(this).fadeOut(1200);//toggle off the battle_tally class
       }).show().removed;
     }
@@ -426,15 +415,12 @@ $(document).ready(function(){
     defender.owner = attacker.owner; //Set new owner of province
     defender.garrison = attacker.garrison - 1;
     attacker.garrison = 1; //leave one man behind
-    //toggle province's new labeling and styles, while removing old ones 
-    $('defender').toggleClass('defender_color adjacent_color'); //how do I take off all colors first?? Numbers not displaying, despite correct property values
-    $('defender').html('<span class="garrison_color">'+defender.garrison+'</span><br>'+defender.owner);
-    $('attacker').text('<span class="garrison_color">'+attacker.garrison+'</span><br>'+attacker.owner);
-    
-
-    //'
+    //toggle province's new labeling and styles, while removing old ones
+    $(defender).toggleClass().toggleClass('col-xs-1 province p1_colors defender_color'); //Better way to target substring color classes???
+    $(defender).html('<span class="garrison_color">'+defender.garrison+'</span><br>'+defender.owner);
+    $(attacker).html('<span class="garrison_color">'+attacker.garrison+'</span><br>'+attacker.owner);
+    console.log('garrison color class in html set');
   }
-
 
   //---------dice-roll-calculation------------
   //compute winner for battle function
