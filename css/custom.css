@@ -5,8 +5,12 @@
 
 html, body, section {
 	font-family: 'Cinzel', serif;
-  height: 800px;
-  background-color: #2d2d2d;
+  height: 100vh;
+}
+
+#bgd{
+	position: fixed;
+	z-index: -50;
 }
 div.vsplitter{
 	background-color:rgba(0,0,0,0.1);
@@ -19,7 +23,7 @@ h1{
 
 h3{
 	color:white;
-	font-size: 20px;
+	font-size: 35px;
 
 }
 
@@ -53,14 +57,16 @@ h3{
 
 /*Sidebar Styling*/
 
-section #sidebar{
-	background-color: #2d2d2d;
+#sidebar{
 	padding: 20px;
 	margin-left: 40px;
 	min-height:768px;
+	background-color: #2d2d2d;
 }
 #sidebar_wrapper{
-	padding-left: 40px;
+	padding: 40px;
+	height:100vh;
+	
 }
 
 header{
@@ -110,6 +116,10 @@ article{
 	color:white;
 }
 
+#control_box{
+	overflow: auto;
+}
+
 td, th{
 	text-align: center;
 }
@@ -120,22 +130,25 @@ td, th{
 
 #turn_reminder{
 	position: fixed;
-	margin: auto;
-	left:540px;
-	bottom:50px;
+	left:25%;
+	bottom:40vh;
 	background-color: rgb(216,164,38);
-	padding: 20px;
-	font-size: 30px;
+	padding: 40px;
+	font-size: 85px;
+	pointer-events:none;
 }
 
 #tooltip{
 	text-align: right;
+	margin:0 auto;
 	color:white;
 	position: fixed;
+	padding: 30px;
 	left:20px;
-	bottom:50px;
-	font-size: 30px;
+	bottom: 5%;
+	font-size: 45px;
 	background-color: rgba(212,39,39,0.8);
+	pointer-events:none;
 }
 
 .battle_tally{
@@ -147,7 +160,7 @@ td, th{
 }
 
 .garrison_color{
-	color:springgreen;
+	color:springgreen !important;
 }
 
 .p1_colors{
