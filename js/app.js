@@ -87,7 +87,10 @@ $(document).ready(function(){
 
     //initialize attack button for continuing attack (ATTACK PHASE ONLY)
     $('#attack_btn').click(function(){ //"Invade another province"
-      map_grid.unbind('click');
+      map_grid.unbind();
+      if($(attacker).hasClass('attacker_color')){//toggles off attacker pathing
+      toggle_adjacent(attacker);
+      }
       attack();
       $(this).hide();  
     });
@@ -268,8 +271,6 @@ $(document).ready(function(){
       if(counter < 1 && this.owner == leader && this.garrison > 1){
         attacker = this; //assigns to global attacker
 
-        //highlight attacker province
-        $(attacker).toggleClass('attacker_color');
         //toggles attack range color
         toggle_adjacent(this);
 
@@ -315,12 +316,12 @@ $(document).ready(function(){
   function events_reset(attacker, defender){
     //ends click selections on map or warnings
     $("map_grid, attacker, defender").unbind();
-    $(defender).toggleClass('defender_color adjacent_color');//clears highlight of attacker cells
-    $(attacker).toggleClass('attacker_color');//clears highlight of adjacent cells
+    $(defender).toggleClass('defender_color adjacent_color');//clears highlight of defender cells
   }
 
   function toggle_adjacent(this_obj){//just plug "this" into the arg and it will toggle adjacent
     var adjacent_indices = [this_obj.upper, this_obj.downer, this_obj.lefter, this_obj.righter];
+    $(attacker).toggleClass('attacker_color');
     for(i = 0; i < adjacent_indices.length;i++){
       $(map_grid[adjacent_indices[i]]).toggleClass('adjacent_color');
       $(map_grid[adjacent_indices[i]]).html('<span class="garrison_color">'+map_grid[adjacent_indices[i]].garrison+'</span><br>'+map_grid[adjacent_indices[i]].owner); 
