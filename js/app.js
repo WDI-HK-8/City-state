@@ -66,21 +66,20 @@ $(document).ready(function(){
     $('#advance_btn').click(function(){
       //increments each time this button is clicked, advancing it to 'tiers' of phases. USE SIMILAR FOR MANAGING TURNS
       phase_counter++;
-      //checks only sets recruit setup once, after second-time clicked
+      
       if(phase_counter==1){//run recruit setup
         recruit_setup(); 
         $(this).hide();
       }
-      else if(phase_counter==2){//run to progress into the main of the game
-        map_grid.unbind(click);
-        $('#setup_ind').hide();
+      else if(phase_counter==2){//run 1st fortify phase
         $('#invade_ind').toggleClass('invade_ind');
-        attack();
-      }
-
-      else if(phase_counter==3){
+        $('#setup_ind').hide();
+        map_grid.unbind();
         $('#attack_btn').hide();
         fortify();
+      }
+      else if(phase_counter==3){
+        
       }
     $(this).hide();
     });
@@ -420,56 +419,37 @@ $(document).ready(function(){
     $(defender).toggleClass().toggleClass('col-xs-1 province p1_colors defender_color'); //Better way to target substring color classes???
     $(defender).html('<span class="garrison_color">'+defender.garrison+'</span><br>'+defender.owner);
     $(attacker).html('<span class="garrison_color">'+attacker.garrison+'</span><br>'+attacker.owner);
-    console.log('garrison color class in html set');
   }
 
   //---------dice-roll-calculation------------
   //compute winner for battle function
   function battle_outcome(attacker_rolls, defender_rolls){
-    console.log('battle_outcome has run.');
     var attacker_losses = 0;
     var defender_losses = 0;
-    //for defender has 2 dices
-    if(defender_rolls.length >= 2){
-      //mutate attacker rolls to match 2 (don't worry, it is sorted)
+    if(defender_rolls.length >= 2){//for defender has 2 dices
       attacker_rolls.length = 2;
-
       defender_rolls.forEach(function(element, index){
         
         //if indexed attacker roll is less or equal to iteration of defender roll
         if(element >= attacker_rolls[index]){
-          // console.log('attacker loses 1');
           attacker_losses++;
         }
         else if(element < attacker_rolls[index]){
-          // console.log('defender loses 1');
           defender_losses++;
         }
-
       });
     }
-    //for defender has only one dice 
-    else if(defender_rolls.length == 1){
+    else if(defender_rolls.length == 1){//for defender has only one dice 
       attacker_rolls.length = 1;
 
-      //for one-on-one dice matchup, 
-      if (defender_rolls[0] >= attacker_rolls[0]){
-        // console.log('attacker loses 1');
+      if (defender_rolls[0] >= attacker_rolls[0]){//for one-on-one dice matchup, 
         attacker_losses++;
       }
       else if(defender_rolls[0] < attacker_rolls[0]){
-        // console.log('defender loses 1');
         defender_losses++;
       }
     }
-    // console.log('attacker_losses: '+attacker_losses+' defender_losses: '+defender_losses);
     return [attacker_losses, defender_losses];
-  }
-
-  //a random dice roll
-  function one_diceroll(){
-    player1.roll = Math.ceil(Math.random()*6); //adds diceroll to property firstRoll
-    player2.roll = Math.ceil(Math.random()*6);
   }
 
   //---------dice-roll-calculation------------
@@ -508,7 +488,6 @@ $(document).ready(function(){
     $('#status_log').html('<span id="player1_roll">Player 1</span> rolled: <br><span id="player1_roll">' + player1.roll + '</span><br><span id="player2_roll">Player 2</span> rolled:<br> <span id="player2_roll">' + player2.roll +'</span><br>');
   } 
 
-
   //initial setup dice roll of game
   function roll_setup(){
     $('#phase_log p').text('Select \'Simultaneous Roll\'');
@@ -523,12 +502,10 @@ $(document).ready(function(){
     $('#roll_btn').click(function(){
       one_diceroll(); //sets .roll property
       show_winner(); //compares .roll property to lead, change text
-
     });
   } 
 
   //---------Fortification/move phase------------
-
 
   function fortify(){
     //Binds click event for your own territory that exceeds one garrison
