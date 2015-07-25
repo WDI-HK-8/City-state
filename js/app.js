@@ -16,7 +16,7 @@ var water_cells = [
   [0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11] //85 water cells
 ];
 var up,down,left,right, attacker, defender, leader, second_player, player_turn; //CURRENT PLAYER: 'LEADER' ONLY
-var x,y,z;
+var move_garrison, fortify_garrison;
 var phase_counter=0;
 var player1={};
 var player2={};
@@ -72,15 +72,19 @@ $(document).ready(function(){
         $(this).hide();
       }
       else if(phase_counter==2){//run 1st fortify phase
-        $('#invade_ind').toggleClass('invade_ind');
-        $('#setup_ind').hide();
+        $('#attack_ind').toggleClass('phase_ind');
+        $('#deploy_ind, #advance_btn').show();
+        $('#setup_ind, #attack_btn').hide(); //hide attack btn
         map_grid.unbind();
-        $('#attack_btn').hide();
         fortify();
       }
       else if(phase_counter==3){
-        
+        console.log('next players turn');
       }
+      else if(phase_counter==4){
+        //run other player's turn. Change current player.
+      }
+
     $(this).hide();
     });
 
@@ -95,7 +99,7 @@ $(document).ready(function(){
     });
 
     //runs once from init()
-    $('#turn_reminder').hide();
+    $('#turn_reminder, #deploy_ind').hide();
     $('#attack_btn, #roll_btn, #advance_btn, #confirm_btn').hide();
     $('#setup_ind').css('color','#fbabab');
   };
@@ -155,9 +159,9 @@ $(document).ready(function(){
   function recruit_setup(){
 
     //initialize recruit count. Add in choice for the beginning...
-    player1.recruits = 6;
-    player2.recruits = 6;
-    neutral.recruits = 12;
+    player1.recruits = 4;
+    player2.recruits = 4;
+    neutral.recruits = 6;
     player1.recruitcounter = 0;
     player2.recruitcounter = 0;
     neutral.recruitcounter = 0;
@@ -246,6 +250,7 @@ $(document).ready(function(){
         $('#sidebar').css('background-color','#2d2d2d');
         $('#attack_btn').text('Launch attack').show();
         $('#advance_btn').text('Skip to next phase').show(); 
+        $('#attack_ind').toggleClass('phase_ind');
       }
       else{ //Clicking someone else's marked province
         $('#phase_log p').text('Someone got this tile already! Just invade it later.');
@@ -269,16 +274,12 @@ $(document).ready(function(){
       //checks if attack origin selected is owned by you and has garrison greater than 1
       if(counter < 1 && this.owner == leader && this.garrison > 1){
         attacker = this; //assigns to global attacker
-
-        //toggles attack range color
-        toggle_adjacent(this);
-
-        //one attacker must stay behind
+        toggle_adjacent(this); //toggles attack range color
+        //display in log
         $('#phase_log p').html("You have selected <span id=\"player1_roll\">"+this.owner+'\'s</span>'+ ' province:'+'<br><br>It has '+this.garrison+ ' troops garrisoned'+'<br><br>This city has no harbor to attack over water.');
         $('#tooltip').html(leader+'\'s attack. Click again to target');
         $('#attack_btn').text('Invade another province').show(); //show other invade options
         counter++;
-
       }
       //select attack target only if it has an adjacent color class
       else if(counter >= 1 && $(this).hasClass('adjacent_color')){ 
@@ -298,7 +299,7 @@ $(document).ready(function(){
               toggle_adjacent(attacker); 
               events_reset(attacker, defender);
               $('#attack_btn').show();
-              $(this).unbind().hide();//hides and unbinds the confirm button when clicked
+              $(this).unbind().hide();
             });
           }
       }
@@ -312,11 +313,6 @@ $(document).ready(function(){
     });
   }
 
-  function events_reset(attacker, defender){
-    //ends click selections on map or warnings
-    $("map_grid, attacker, defender").unbind();
-    $(defender).toggleClass('defender_color adjacent_color');//clears highlight of defender cells
-  }
 
   function toggle_adjacent(this_obj){//just plug "this" into the arg and it will toggle adjacent
     var adjacent_indices = [this_obj.upper, this_obj.downer, this_obj.lefter, this_obj.righter];
@@ -324,13 +320,25 @@ $(document).ready(function(){
     for(i = 0; i < adjacent_indices.length;i++){
       $(map_grid[adjacent_indices[i]]).toggleClass('adjacent_color');
       $(map_grid[adjacent_indices[i]]).html('<span class="garrison_color">'+map_grid[adjacent_indices[i]].garrison+'</span><br>'+map_grid[adjacent_indices[i]].owner); 
-      //empty cells will revert back to blank
-      if(counter > 1 && map_grid[adjacent_indices[i]].owner == 'nobody'){
+      //Always revert empty cells back to empty string
+      if(map_grid[adjacent_indices[i]].owner == 'nobody'){
         $(map_grid[adjacent_indices[i]]).text('');
+      }
+      //Below section for Fortify() only; Hence counter is set to 3.
+      else if(counter >= 3){ //Undo attack adjacent highlighting
+        $(map_grid[adjacent_indices[i]]).toggleClass('adjacent_color');//turn off adjacent_color class
+        if(map_grid[adjacent_indices[i]].owner == leader){//turns on fortify_color for those that are leader
+          $(map_grid[adjacent_indices[i]]).toggleClass('fortify_color');
+        }
       }
     }
   }
 
+  function events_reset(attacker, defender){
+    //ends click selections on map or warnings
+    $("map_grid, attacker, defender").unbind();
+    $(defender).toggleClass('defender_color adjacent_color');//clears highlight of defender cells
+  }
   function offense(attacker){ //conditions met: attacker.garrison is already greater than 1
     var attacker_rolls = [];
     var attacker_avail = attacker.garrison - 1;
@@ -370,7 +378,6 @@ $(document).ready(function(){
     }
     return defender_rolls.sort().reverse(); 
   }
-
 
   //get greatest pair via one_dicerolls
   function battle(attacker, defender){
@@ -491,7 +498,7 @@ $(document).ready(function(){
   //initial setup dice roll of game
   function roll_setup(){
     $('#phase_log p').text('Select \'Simultaneous Roll\'');
-    $('#tooltip').text('Roll to see who goes first.')
+    $('#tooltip').text('Roll to see who goes first.');
     $('#roll_btn').text('Simultaneous Roll!');
     $('#roll_btn').show();
     initial_roll();
@@ -509,14 +516,33 @@ $(document).ready(function(){
 
   function fortify(){
     //Binds click event for your own territory that exceeds one garrison
-    map_grid.click(function(){
-      if($(this).owner == leader && $(this).garrison > 1){
-        //select adjacent range..., pass in this value as arg
+    counter = 3; //reset counter
 
+    $('#tooltip').text('Select one territory to fortify');
+    $('#attack_ind').toggleClass('phase_ind');
+    $('#fortify_ind').toggleClass('phase_ind');
+    map_grid.click(function(){ //select own territory to fortify
+      if(counter == 3 && this.owner == leader && this.garrison > 1){
+        mover = this;
+        toggle_adjacent(this);
+        counter++;
       }
-    })
-    //show tooltip
-    //show log of instructions
+      else if(counter == 4){ //if fortify territory selected
+        if(this.owner == leader && $(this).hasClass('fortify_color')){
+          console.log('counter 4 has run');
+          toggle_adjacent(mover);
+          this.garrison += mover.garrison-1;
+          mover.garrison = 1;
+          $(this).html('<span class="garrison_color">'+this.garrison+'</span><br>'+this.owner); //REFACTOR
+          $(mover).html('<span class="garrison_color">'+mover.garrison+'</span><br>'+mover.owner); //REFACTOR
+          map_grid.unbind();
+        }
+        else if(this.owner != leader){
+          alert('select your own province!');
+        }
+      }
+    });
+    //cancel button to reset counter
   }
 
 });

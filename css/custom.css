@@ -17,7 +17,7 @@ div.vsplitter{
 }
 
 h1{
-	font-size: 50px;
+	font-size: 75px;
 	font-weight: bold;
 }
 
@@ -180,13 +180,18 @@ td, th{
 .defender_color{ 
 	background-color: rgba(255,0,0,0.7) !important;
 }
+/*light blue*/
+.attacker_color{
+	background-color: rgba(150,0,38,0.8) !important;
+}
 /*light red*/
 .adjacent_color{
 	background-color: rgba(255,0,0,0.3) !important;
 }
-/*light blue*/
-.attacker_color{
-	background-color: rgba(150,0,38,0.8) !important;
+
+.fortify_color{
+	background-color: #22AF2D !important;
+	color:#AF104A;
 }
 
 /*hover on attack*/
@@ -194,7 +199,7 @@ td, th{
 	border: red 2.5px solid !important;
 }
 
-.invade_ind{
+.phase_ind{
 	color: #fbabab;
 }
 
